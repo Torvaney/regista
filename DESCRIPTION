@@ -1,0 +1,10 @@
+Package: regista
+Type: Package
+Title: Soccer analytics
+Version: 0.1.0
+Author: Ben Torvaney
+Maintainer: Ben Torvaney <torvaney@protonmail.com>
+Description: A collection of models and tools for soccer analytics
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
