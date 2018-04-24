@@ -5,6 +5,6 @@ Version: 0.1.0
 Author: Ben Torvaney
 Maintainer: Ben Torvaney <torvaney@protonmail.com>
 Description: A collection of models and tools for soccer analytics
-License: What license is it under?
+License: GNU GPLv3
 Encoding: UTF-8
 LazyData: true
