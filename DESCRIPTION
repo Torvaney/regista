@@ -8,3 +8,12 @@ Description: A collection of models and tools for soccer analytics
 License: GNU GPLv3
 Encoding: UTF-8
 LazyData: true
+Imports:
+  dplyr,
+  lazyeval,
+  magrittr,
+  purrr,
+  rlang,
+  stringr
+Suggests: testthat
+RoxygenNote: 6.0.1
