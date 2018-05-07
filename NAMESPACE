@@ -2,8 +2,10 @@
 
 export(def)
 export(dixoncoles)
+export(dixoncoles_ext)
 export(off)
 importFrom(forcats,fct_relabel)
+importFrom(lazyeval,f_eval)
 importFrom(lazyeval,f_eval_lhs)
 importFrom(purrr,"%>%")
 importFrom(purrr,flatten_chr)

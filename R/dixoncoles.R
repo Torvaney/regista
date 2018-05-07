@@ -10,6 +10,55 @@
 #' Statistical Society: Series C (Applied Statistics) 46, no. 2 (1997):
 #' 265-280.
 #'
+#' @param hgoal A formula describing the home goals column in `data`, or a
+#'   numeric vector containing the observed home goals for a set of games.
+#' @param agoal A formula describing the away goals column in `data`, or a
+#'   numeric vector containing the observed away goals for a set of games.
+#' @param hteam A formula describing the home team column in `data`, or a
+#'   numeric vector containing the home team name for a set of games.
+#' @param ateam A formula describing the away team column in `data`, or a
+#'   numeric vector containing the away team name for a set of games.
+#' @param data Data frame, list or environment (or object coercible by
+#' `as.data.frame` to a data frame) containing the variables in the model.
+#'
+#' @return A list with component `par` containing the best set of parameters
+#' found. See `optim` for details.
+#'
+#' @importFrom lazyeval f_eval
+#' @export
+#' @examples
+#' res <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+#'
+dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
+  modelframe <- data.frame(
+    hgoal = f_eval(hgoal, data),
+    agoal = f_eval(agoal, data),
+    hteam = f_eval(hteam, data),
+    ateam = f_eval(ateam, data),
+    hfa   = TRUE
+  )
+
+  res <- dixoncoles_ext(f1 = hgoal ~ off(hteam) + def(ateam) + hfa + 0,
+                        f2 = agoal ~ off(ateam) + def(hteam) + 0,
+                        data = modelframe)
+  res
+}
+
+#' A generic Dixon-Coles model for estimating team strengths
+#'
+#' @description
+#'
+#' This is an implementation of the Dixon-Coles model for estimating soccer
+#' teams' strength from goals scored and conceded:
+#'
+#' Dixon, Mark J., and Stuart G. Coles. "Modelling association football scores
+#' and inefficiencies in the football betting market." Journal of the Royal
+#' Statistical Society: Series C (Applied Statistics) 46, no. 2 (1997):
+#' 265-280.
+#'
+#' By specifying the model as a pair of formulas, it allows the user to
+#' estimate the effect of parameters beyond team strength.
+#'
 #' @param f1 A formula describing the model for home goals
 #' @param f2 A formula describing the model for away goals
 #' @param data Data frame, list or environment (or object coercible by
@@ -25,10 +74,10 @@
 #' games <- premier_league_2010
 #' games$hfa <- TRUE
 #'
-#' fit <- dixoncoles(hgoal ~ off(home) + def(away) + hfa + 0,
-#'                   agoal ~ off(home) + def(home) + 0,
-#'                   data = games)
-dixoncoles <- function(f1, f2, data) {
+#' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
+#'                       agoal ~ off(home) + def(home) + 0,
+#'                       data = games)
+dixoncoles_ext <- function(f1, f2, data) {
   modeldata <- dc_modeldata(f1, f2, data)
 
   params <- rep_len(0, length(modeldata$vars) + 1)

@@ -4,12 +4,20 @@
 \alias{dixoncoles}
 \title{Dixon-Coles model for estimating team strengths}
 \usage{
-dixoncoles(f1, f2, data)
+dixoncoles(hgoal, agoal, hteam, ateam, data)
 }
 \arguments{
-\item{f1}{A formula describing the model for home goals}
+\item{hgoal}{A formula describing the home goals column in `data`, or a
+numeric vector containing the observed home goals for a set of games.}
 
-\item{f2}{A formula describing the model for away goals}
+\item{agoal}{A formula describing the away goals column in `data`, or a
+numeric vector containing the observed away goals for a set of games.}
+
+\item{hteam}{A formula describing the home team column in `data`, or a
+numeric vector containing the home team name for a set of games.}
+
+\item{ateam}{A formula describing the away team column in `data`, or a
+numeric vector containing the away team name for a set of games.}
 
 \item{data}{Data frame, list or environment (or object coercible by
 `as.data.frame` to a data frame) containing the variables in the model.}
@@ -28,11 +36,6 @@ Statistical Society: Series C (Applied Statistics) 46, no. 2 (1997):
 265-280.
 }
 \examples{
-# Add home field advantage dummy
-games <- premier_league_2010
-games$hfa <- TRUE
+res <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
 
-fit <- dixoncoles(hgoal ~ off(home) + def(away) + hfa + 0,
-                  agoal ~ off(home) + def(home) + 0,
-                  data = games)
 }
