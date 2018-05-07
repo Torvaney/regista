@@ -21,8 +21,12 @@
 #' @importFrom stats optim
 #' @export
 #' @examples
-#' fit <- dixoncoles(hgoal ~ off(home) + def(visitor) + hfa + 0,
-#'                   agoal ~ off(visitor) + def(home) + 0,
+#' # Add home field advantage dummy
+#' games <- premier_league_2010
+#' games$hfa <- TRUE
+#'
+#' fit <- dixoncoles(hgoal ~ off(home) + def(away) + hfa + 0,
+#'                   agoal ~ off(home) + def(home) + 0,
 #'                   data = games)
 dixoncoles <- function(f1, f2, data) {
   modeldata <- dc_modeldata(f1, f2, data)
