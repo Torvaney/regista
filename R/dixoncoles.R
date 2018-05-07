@@ -22,66 +22,6 @@ dixoncoles <- function(f1, f2, data) {
   res
 }
 
-#' Quote terms of a formula
-#' @importFrom rlang parse_quosure
-#' @importFrom magrittr %>%
-#' @importFrom purrr map
-#' @importFrom stats terms
-quo_terms <- function(f) {
-  t <- terms(f)
-
-  if (attr(t, "intercept")) {
-    warning("Intercept term will be ignored")
-  }
-
-  t %>%
-    attr("term.labels") %>%
-    map(parse_quosure)
-}
-
-#' Get the name of variables from an expression
-#' @importFrom rlang eval_tidy quo_name
-var_name <- function(expr, data) {
-  values <- eval_tidy(expr, data)
-
-  if (is.factor(values)) {
-    return(levels(values))
-  }
-
-  quo_name(expr)
-}
-
-#' Get a matrix of dummy variables from a factor
-#' @importFrom stats model.frame model.matrix
-#' @importFrom stringr str_replace_all
-make_dummies <- function(values) {
-  mat <- model.matrix(~ values - 1, model.frame(~ values - 1), contrasts = FALSE)
-  colnames(mat) <- str_replace_all(colnames(mat), "^values", "")
-
-  mat
-}
-
-#' Get a model matrix from an expression
-#' @importFrom rlang eval_tidy quo_name
-term_matrix <- function(expr, data) {
-  values <- eval_tidy(expr, data)
-
-  if (is.factor(values)) {
-    return(make_dummies(values))
-  }
-
-  matrix(values, dimnames = list(NULL, quo_name(expr)))
-}
-
-#' Add column to a matrix, if it doesn't exist
-fill_if_missing <- function(mat, name) {
-  if (!(name %in% colnames(mat))) {
-    blank_column <- matrix(0, nrow = nrow(mat), ncol = 1, dimnames = list(NULL, name))
-    return(cbind(mat, blank_column))
-  }
-  mat
-}
-
 #' Get model data for a Dixon-Coles model
 #' @importFrom magrittr %>%
 #' @importFrom purrr map reduce flatten_chr
@@ -90,14 +30,6 @@ dc_modeldata <- function(f1, f2, data) {
   terms1 <- quo_terms(f1)
   terms2 <- quo_terms(f2)
 
-  all_terms <- unique(c(terms1, terms2))
-
-  column_names <-
-    map(all_terms, var_name, data = data) %>%
-    flatten_chr() %>%
-    unique() %>%
-    sort()
-
   # Create the model matrices
   mat1 <-
     map(terms1, term_matrix, data = data) %>%
@@ -105,6 +37,8 @@ dc_modeldata <- function(f1, f2, data) {
   mat2 <-
     map(terms2, term_matrix, data = data) %>%
     reduce(cbind)
+
+  column_names <- unique(c(colnames(mat1), colnames(mat2)))
 
   # Fill in missing parameters
   mat1 <- reduce(column_names, fill_if_missing, .init = mat1)
@@ -137,7 +71,7 @@ tau <- function(hg, ag, home_rates, away_rates, rho) {
 
 #' Dixon-Coles negative log likelihood
 #' @importFrom stats dpois
-negloglike <- function(hg, ag, home_rates, away_rates, rho) {
+dc_negloglike <- function(hg, ag, home_rates, away_rates, rho) {
   hprob <- dpois(hg, home_rates, log = TRUE)
   aprob <- dpois(ag, away_rates, log = TRUE)
 
@@ -152,11 +86,59 @@ dc_objective_function <- function(params, modeldata) {
   home_rates <- exp(rate_params %*% t(modeldata$mat1))
   away_rates <- exp(rate_params %*% t(modeldata$mat2))
 
-  negloglike(
+  dc_negloglike(
     modeldata$y1,
     modeldata$y2,
     home_rates,
     away_rates,
     rho
   )
+}
+
+#' Quote terms of a formula
+#' @importFrom rlang parse_quosure
+#' @importFrom magrittr %>%
+#' @importFrom purrr map
+#' @importFrom stats terms
+quo_terms <- function(f) {
+  t <- terms(f)
+
+  if (attr(t, "intercept")) {
+    warning("Intercept term will be ignored")
+  }
+
+  t %>%
+    attr("term.labels") %>%
+    map(parse_quosure)
+}
+
+#' Get a matrix of dummy variables from a factor
+#' @importFrom stats model.frame model.matrix
+#' @importFrom stringr str_replace_all
+make_dummies <- function(values) {
+  mat <- model.matrix(~ values - 1, model.frame(~ values - 1), contrasts = FALSE)
+  colnames(mat) <- str_replace_all(colnames(mat), "^values", "")
+
+  mat
+}
+
+#' Get a model matrix from an expression
+#' @importFrom rlang eval_tidy quo_name
+term_matrix <- function(expr, data) {
+  values <- eval_tidy(expr, data)
+
+  if (is.factor(values)) {
+    return(make_dummies(values))
+  }
+
+  matrix(values, dimnames = list(NULL, quo_name(expr)))
+}
+
+#' Add column to a matrix, if it doesn't exist
+fill_if_missing <- function(mat, name) {
+  if (!(name %in% colnames(mat))) {
+    blank_column <- matrix(0, nrow = nrow(mat), ncol = 1, dimnames = list(NULL, name))
+    return(cbind(mat, blank_column))
+  }
+  mat
 }
