@@ -9,6 +9,7 @@ License: GNU GPLv3
 Encoding: UTF-8
 LazyData: true
 Imports:
+  forcats, 
   lazyeval,
   magrittr,
   purrr,
