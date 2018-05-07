@@ -48,8 +48,7 @@ dixoncoles <- function(f1, f2, data) {
 
 #' Get model data for a Dixon-Coles model
 #' @keywords internal
-#' @importFrom magrittr %>%
-#' @importFrom purrr map reduce flatten_chr
+#' @importFrom purrr %>% map reduce flatten_chr
 #' @importFrom lazyeval f_eval_lhs
 dc_modeldata <- function(f1, f2, data) {
   terms1 <- quo_terms(f1)
@@ -132,8 +131,7 @@ dc_objective_function <- function(params, modeldata) {
 #' Quote terms of a formula
 #' @keywords internal
 #' @importFrom rlang parse_quo caller_env
-#' @importFrom magrittr %>%
-#' @importFrom purrr map
+#' @importFrom purrr %>% map
 #' @importFrom stats terms
 quo_terms <- function(f) {
   t <- terms(f)
