@@ -1,28 +1,49 @@
-#' Dixon-Coles model
+#' Dixon-Coles model for estimating team strengths
 #'
-#' This is a description
+#' @description
 #'
-#' @details
-#' Some details
+#' This is an implementation of the Dixon-Coles model for estimating soccer
+#' teams' strength from goals scored and conceded:
 #'
-#' @examples
-#' mtcars
+#' Dixon, Mark J., and Stuart G. Coles. "Modelling association football scores
+#' and inefficiencies in the football betting market." Journal of the Royal
+#' Statistical Society: Series C (Applied Statistics) 46, no. 2 (1997):
+#' 265-280.
 #'
-#' @export
+#' @param f1 A formula describing the model for home goals
+#' @param f2 A formula describing the model for away goals
+#' @param data Data frame, list or environment (or object coercible by
+#' `as.data.frame` to a data frame) containing the variables in the model.
+#'
+#' @return A list with component `par` containing the best set of parameters
+#' found. See `optim` for details.
 #'
 #' @importFrom stats optim
+#' @export
+#' @examples
+#' fit <- dixoncoles(hgoal ~ off(home) + def(visitor) + hfa + 0,
+#'                   agoal ~ off(visitor) + def(home) + 0,
+#'                   data = games)
 dixoncoles <- function(f1, f2, data) {
   modeldata <- dc_modeldata(f1, f2, data)
 
   params <- rep_len(0, length(modeldata$vars) + 1)
   names(params) <- c(modeldata$vars, "rho")
 
-  res <- optim(params, dc_objective_function, method = "BFGS", modeldata = modeldata)
+  res <- optim(
+    params,
+    dc_objective_function,
+    method = "BFGS",
+    modeldata = modeldata
+  )
 
   res
 }
 
+# Auxiliary function ----------------------------------------------------------
+
 #' Get model data for a Dixon-Coles model
+#' @keywords internal
 #' @importFrom magrittr %>%
 #' @importFrom purrr map reduce flatten_chr
 #' @importFrom lazyeval f_eval_lhs
@@ -58,18 +79,26 @@ dc_modeldata <- function(f1, f2, data) {
 }
 
 #' Function controlling dependence between home and away goals
-#' @importFrom dplyr case_when
+#' @keywords internal
 tau <- function(hg, ag, home_rates, away_rates, rho) {
-  case_when(
-    (hg == 0) & (ag == 0) ~ 1 - home_rates * away_rates * rho,
-    (hg == 0) & (ag == 1) ~ 1 + home_rates * rho,
-    (hg == 1) & (ag == 0) ~ 1 + away_rates * rho,
-    (hg == 1) & (ag == 1) ~ 1 - rho,
-    TRUE ~ 1
-  )
+  if (!all.equal(length(hg), length(ag),
+                 length(home_rates), length(away_rates))) {
+    stop("Supplied vectors must all have the same length")
+  }
+
+  # Initialise values to 1
+  values <- rep_len(1, length.out = length(hg))
+
+  values <- ifelse((hg == 0) & (ag == 0), 1 - home_rates * away_rates * rho, values)
+  values <- ifelse((hg == 0) & (ag == 1), 1 + home_rates * rho, values)
+  values <- ifelse((hg == 1) & (ag == 0), 1 + away_rates * rho, values)
+  values <- ifelse((hg == 1) & (ag == 1), 1 - rho, values)
+
+  values
 }
 
 #' Dixon-Coles negative log likelihood
+#' @keywords internal
 #' @importFrom stats dpois
 dc_negloglike <- function(hg, ag, home_rates, away_rates, rho) {
   hprob <- dpois(hg, home_rates, log = TRUE)
@@ -79,6 +108,7 @@ dc_negloglike <- function(hg, ag, home_rates, away_rates, rho) {
 }
 
 #' Dixon-Coles objective function
+#' @keywords internal
 dc_objective_function <- function(params, modeldata) {
   rho <- params["rho"]
   rate_params <- matrix(params[names(params) != "rho"], nrow = 1)
@@ -96,7 +126,8 @@ dc_objective_function <- function(params, modeldata) {
 }
 
 #' Quote terms of a formula
-#' @importFrom rlang parse_quosure
+#' @keywords internal
+#' @importFrom rlang parse_quo caller_env
 #' @importFrom magrittr %>%
 #' @importFrom purrr map
 #' @importFrom stats terms
@@ -109,10 +140,11 @@ quo_terms <- function(f) {
 
   t %>%
     attr("term.labels") %>%
-    map(parse_quosure)
+    map(parse_quo, env = caller_env())
 }
 
 #' Get a matrix of dummy variables from a factor
+#' @keywords internal
 #' @importFrom stats model.frame model.matrix
 #' @importFrom stringr str_replace_all
 make_dummies <- function(values) {
@@ -123,6 +155,7 @@ make_dummies <- function(values) {
 }
 
 #' Get a model matrix from an expression
+#' @keywords internal
 #' @importFrom rlang eval_tidy quo_name
 term_matrix <- function(expr, data) {
   values <- eval_tidy(expr, data)
@@ -135,6 +168,7 @@ term_matrix <- function(expr, data) {
 }
 
 #' Add column to a matrix, if it doesn't exist
+#' @keywords internal
 fill_if_missing <- function(mat, name) {
   if (!(name %in% colnames(mat))) {
     blank_column <- matrix(0, nrow = nrow(mat), ncol = 1, dimnames = list(NULL, name))
