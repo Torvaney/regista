@@ -91,14 +91,14 @@ tau <- function(hg, ag, home_rates, away_rates, rho) {
   }
 
   # Initialise values to 1
-  values <- rep_len(1, length.out = length(hg))
+  vals <- rep_len(1, length.out = length(hg))
 
-  values <- ifelse((hg == 0) & (ag == 0), 1 - home_rates * away_rates * rho, values)
-  values <- ifelse((hg == 0) & (ag == 1), 1 + home_rates * rho, values)
-  values <- ifelse((hg == 1) & (ag == 0), 1 + away_rates * rho, values)
-  values <- ifelse((hg == 1) & (ag == 1), 1 - rho, values)
+  vals <- ifelse((hg == 0) & (ag == 0), 1 - home_rates * away_rates * rho, vals)
+  vals <- ifelse((hg == 0) & (ag == 1), 1 + home_rates * rho, vals)
+  vals <- ifelse((hg == 1) & (ag == 0), 1 + away_rates * rho, vals)
+  vals <- ifelse((hg == 1) & (ag == 1), 1 - rho, vals)
 
-  values
+  vals
 }
 
 #' Dixon-Coles negative log likelihood
@@ -152,7 +152,11 @@ quo_terms <- function(f) {
 #' @importFrom stats model.frame model.matrix
 #' @importFrom stringr str_replace_all
 make_dummies <- function(values) {
-  mat <- model.matrix(~ values - 1, model.frame(~ values - 1), contrasts = FALSE)
+  mat <- model.matrix(
+    ~ values - 1,
+    model.frame(~ values - 1),
+    contrasts = FALSE
+  )
   colnames(mat) <- str_replace_all(colnames(mat), "^values", "")
 
   mat
@@ -175,7 +179,8 @@ term_matrix <- function(expr, data) {
 #' @keywords internal
 fill_if_missing <- function(mat, name) {
   if (!(name %in% colnames(mat))) {
-    blank_column <- matrix(0, nrow = nrow(mat), ncol = 1, dimnames = list(NULL, name))
+    blank_column <- matrix(0, nrow = nrow(mat), ncol = 1,
+                           dimnames = list(NULL, name))
     return(cbind(mat, blank_column))
   }
   mat
