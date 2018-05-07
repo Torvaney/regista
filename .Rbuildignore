@@ -1,6 +1,8 @@
 # Files
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README\.Rmd$
+^README\.md$
 ^NEWS\.md$
 ^TODO.md
 ^\.travis\.yml$
