@@ -1,3 +1,9 @@
+# Files
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\/Rmd
+^NEWS\.md$
+^TODO.md
+^\.travis\.yml$
+
+# Directories
+Rmd  # Directory for documenting development process, design decisions etc
