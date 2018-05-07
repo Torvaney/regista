@@ -5,7 +5,7 @@ README
 regista
 =======
 
-[![Build Status](https://travis-ci.org/torvaney/regista?branch=master)](https://travis-ci.org/torvaney/regista)
+[![Build Status](https://travis-ci.org/Torvaney/regista.svg?branch=master)](https://travis-ci.org/Torvaney/regista)
 
 Overview
 --------
