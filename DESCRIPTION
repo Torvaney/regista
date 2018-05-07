@@ -2,8 +2,7 @@ Package: regista
 Type: Package
 Title: Soccer analytics
 Version: 0.1.0
-Author: Ben Torvaney
-Maintainer: Ben Torvaney <torvaney@protonmail.com>
+Authors@R: person("Ben", "Torvaney", email = "torvaney@protonmail.com", role = c("aut", "cre"))
 Description: A collection of models and tools for soccer analytics.
 License: file LICENSE
 Encoding: UTF-8
