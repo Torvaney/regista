@@ -54,3 +54,20 @@ test_that("Negative log likelihood is using dependence parameter", {
   expect_nll_dep(2, 2, 0.7, 1.8, -0.44)
   expect_nll_dep(0, 1, 1.4, 1.1, -0.21)
 })
+
+test_that("Constructing dummy variables from factors works", {
+  expect_equal_mat <- function(m1, m2) {
+    expect_equal(colnames(m1), colnames(m2))
+    expect_equal(dim(m1), dim(m2))
+    expect_equal(as.double(m1), as.double(m2))
+  }
+
+  fct <- factor(c("a", "b", "a"))
+  mat <- matrix(
+    c(1, 0, 1,  0, 1, 0),
+    nrow = 3, ncol = 2,
+    dimnames = list(NULL, c("a", "b"))
+  )
+
+  expect_equal_mat(regista:::make_dummies(fct), mat)
+})
