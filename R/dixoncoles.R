@@ -44,7 +44,7 @@ dixoncoles <- function(f1, f2, data) {
   res
 }
 
-# Auxiliary function ----------------------------------------------------------
+# Auxiliary functions ---------------------------------------------------------
 
 #' Get model data for a Dixon-Coles model
 #' @keywords internal
@@ -150,14 +150,13 @@ quo_terms <- function(f) {
 #' Get a matrix of dummy variables from a factor
 #' @keywords internal
 #' @importFrom stats model.frame model.matrix
-#' @importFrom stringr str_replace_all
 make_dummies <- function(values) {
   mat <- model.matrix(
     ~ values - 1,
     model.frame(~ values - 1),
     contrasts = FALSE
   )
-  colnames(mat) <- str_replace_all(colnames(mat), "^values", "")
+  colnames(mat) <- gsub("^values", "", colnames(mat))
 
   mat
 }

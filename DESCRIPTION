@@ -14,7 +14,6 @@ Imports:
   lazyeval,
   magrittr,
   purrr,
-  rlang,
-  stringr
+  rlang
 Suggests: testthat
 RoxygenNote: 6.0.1
