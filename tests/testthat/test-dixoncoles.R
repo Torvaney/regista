@@ -71,3 +71,27 @@ test_that("Constructing dummy variables from factors works", {
 
   expect_equal_mat(regista:::make_dummies(fct), mat)
 })
+
+test_that("Missing columns are filled in", {
+  mat <- matrix(
+    c(1, 0, 1,  0, 1, 0),
+    nrow = 3, ncol = 2,
+    dimnames = list(NULL, c("a", "b"))
+  )
+
+  expect_cols <- function(m, col, cols) {
+    # Check that column is added...
+    filled <- fill_if_missing(m, col)
+    expect_equal(colnames(filled), cols)
+    # And that values are all 0
+    if (!(col %in% colnames(m))) {
+      zeroes <- rep(0, nrow(m))
+      expect_equal(filled[, col], zeroes)
+    }
+  }
+
+  expect_cols(mat, "a", c("a", "b"))
+  expect_cols(mat, "b", c("a", "b"))
+  expect_cols(mat, "c", c("a", "b", "c"))
+  expect_cols(mat, "longname", c("a", "b", "longname"))
+})
