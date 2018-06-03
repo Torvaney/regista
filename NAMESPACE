@@ -3,6 +3,7 @@
 export(def)
 export(dixoncoles)
 export(dixoncoles_ext)
+export(factor_teams)
 export(off)
 importFrom(forcats,fct_relabel)
 importFrom(lazyeval,f_eval)
