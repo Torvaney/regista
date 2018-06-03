@@ -1,6 +1,6 @@
 Package: regista
 Type: Package
-Title: Soccer analytics
+Title: Soccer Analytics
 Version: 0.1.0.9000
 Authors@R: person("Ben", "Torvaney", email = "torvaney@protonmail.com", role = c("aut", "cre"))
 Description: A collection of models and tools for soccer analytics.
