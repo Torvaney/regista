@@ -38,6 +38,9 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
     hfa   = TRUE
   )
 
+  # Make sure team names are factors
+  modelframe <- factor_teams(modelframe, c("hteam", "ateam"))
+
   res <- dixoncoles_ext(f1 = hgoal ~ off(hteam) + def(ateam) + hfa + 0,
                         f2 = agoal ~ off(ateam) + def(hteam) + 0,
                         data = modelframe)
