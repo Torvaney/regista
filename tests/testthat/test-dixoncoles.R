@@ -3,7 +3,7 @@ library(regista)
 
 test_that("Tau(rho=0) is always 1", {
   expect_tau_0 <- function(hg, ag, hr, ar) {
-    expect_equal(regista:::tau(hg, ag, hr, ar, 0), 1)
+    expect_equal(regista:::.tau(hg, ag, hr, ar, 0), 1)
   }
 
   expect_tau_0(0, 0, 0.8, 1.2)
@@ -14,19 +14,19 @@ test_that("Tau(rho=0) is always 1", {
 })
 
 test_that("Dependence calculation (tau) is correct", {
-  expect_equal(regista:::tau(0, 0, 1.2, 1.2, -0.2), 1.288)
-  expect_equal(regista:::tau(0, 0, 1.2, 1.2,  0.2), 0.712)
-  expect_equal(regista:::tau(1, 0, 1.0, 0.8, -0.2), 0.84)
-  expect_equal(regista:::tau(1, 0, 1.0, 0.8,  0.2), 1.16)
-  expect_equal(regista:::tau(0, 1, 0.8, 1.0, -0.2), 0.84)
-  expect_equal(regista:::tau(0, 1, 0.8, 1.0,  0.2), 1.16)
-  expect_equal(regista:::tau(1, 1, 0.8, 0.8, -0.2), 1.2)
-  expect_equal(regista:::tau(1, 1, 0.8, 0.8,  0.2), 0.8)
+  expect_equal(regista:::.tau(0, 0, 1.2, 1.2, -0.2), 1.288)
+  expect_equal(regista:::.tau(0, 0, 1.2, 1.2,  0.2), 0.712)
+  expect_equal(regista:::.tau(1, 0, 1.0, 0.8, -0.2), 0.84)
+  expect_equal(regista:::.tau(1, 0, 1.0, 0.8,  0.2), 1.16)
+  expect_equal(regista:::.tau(0, 1, 0.8, 1.0, -0.2), 0.84)
+  expect_equal(regista:::.tau(0, 1, 0.8, 1.0,  0.2), 1.16)
+  expect_equal(regista:::.tau(1, 1, 0.8, 0.8, -0.2), 1.2)
+  expect_equal(regista:::.tau(1, 1, 0.8, 0.8,  0.2), 0.8)
 })
 
 test_that("Negative log likelihood follows poisson likelihood", {
   expect_nll_pois <- function(hg, ag, hr, ar) {
-    dc_nll <- regista:::dc_negloglike(hg, ag, hr, ar, rho = 0)
+    dc_nll <- regista:::.dc_negloglike(hg, ag, hr, ar, rho = 0)
     pois_nll <- -(dpois(hg, hr, log = TRUE) + dpois(ag, ar, log = TRUE))
     expect_equal(dc_nll, pois_nll)
   }
@@ -39,9 +39,9 @@ test_that("Negative log likelihood follows poisson likelihood", {
 
 test_that("Negative log likelihood is using dependence parameter", {
   expect_nll_dep <- function(hg, ag, hr, ar, rho) {
-    dc_nll <- regista:::dc_negloglike(hg, ag, hr, ar, rho)
+    dc_nll <- regista:::.dc_negloglike(hg, ag, hr, ar, rho)
     pois_ll <- dpois(hg, hr, log = TRUE) + dpois(ag, ar, log = TRUE)
-    exp_nll <- -(pois_ll + log(regista:::tau(hg, ag, hr, ar, rho)))
+    exp_nll <- -(pois_ll + log(regista:::.tau(hg, ag, hr, ar, rho)))
     expect_equal(dc_nll, exp_nll)
   }
 
@@ -69,7 +69,7 @@ test_that("Constructing dummy variables from factors works", {
     dimnames = list(NULL, c("a", "b"))
   )
 
-  expect_equal_mat(regista:::make_dummies(fct), mat)
+  expect_equal_mat(regista:::.make_dummies(fct), mat)
 })
 
 test_that("Missing columns are filled in", {
@@ -81,7 +81,7 @@ test_that("Missing columns are filled in", {
 
   expect_cols <- function(m, col, cols) {
     # Check that column is added...
-    filled <- fill_if_missing(m, col)
+    filled <- regista:::.fill_if_missing(m, col)
     expect_equal(colnames(filled), cols)
     # And that values are all 0
     if (!(col %in% colnames(m))) {

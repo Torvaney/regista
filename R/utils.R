@@ -11,25 +11,25 @@
 #' teams <- factor(c("Arsenal", "Liverpool", "Barcelona", "Dortmund"))
 #' team_off <- off(teams)
 #'
-#' @export
 #' @importFrom forcats fct_relabel
+#' @export
 off <- function(x) {
-  fct_relabel(x, off_str)
+  fct_relabel(x, .off_str)
 }
 
 #' @rdname off
-#' @export
 #' @importFrom forcats fct_relabel
+#' @export
 def <- function(x) {
-  fct_relabel(x, def_str)
+  fct_relabel(x, .def_str)
 }
 
 #' @keywords internal
-off_str <- function(x) {
+.off_str <- function(x) {
   paste0("off___", x)
 }
 
 #' @keywords internal
-def_str <- function(x) {
+.def_str <- function(x) {
   paste0("def___", x)
 }
