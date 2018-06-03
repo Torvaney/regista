@@ -1,5 +1,4 @@
 context("Dixon-Coles")
-library(regista)
 
 test_that("Tau(rho=0) is always 1", {
   expect_tau_0 <- function(hg, ag, hr, ar) {
@@ -94,4 +93,43 @@ test_that("Missing columns are filled in", {
   expect_cols(mat, "b", c("a", "b"))
   expect_cols(mat, "c", c("a", "b", "c"))
   expect_cols(mat, "longname", c("a", "b", "longname"))
+})
+
+test_that("Both Dixon-Coles function return the same estimates", {
+  seed <- 2018-06-03
+  set.seed(seed)
+  fit_simple <- suppressWarnings(
+    dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+  )
+  pars_simple <- sort(fit_simple$par)
+
+  set.seed(seed)
+  fit_ext <- suppressWarnings(
+    dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
+                   f2 = agoal ~ off(away) + def(home) + 0,
+                   data = premier_league_2010)
+  )
+  pars_ext <- sort(fit_ext$par)
+
+  expect_equal(pars_simple, pars_ext)
+})
+
+test_that("Home advantage estimates are reasonable", {
+  skip_if_not_installed("modelr")
+  set.seed(2018)
+  lapply(pl_samples, function(data) {
+    resampled_data <- modelr::resample_bootstrap(premier_league_2010)
+    # Supress warnings related to poorly specified bounds (see #1)
+    fit <- suppressWarnings(dixoncoles(
+      ~hgoal,
+      ~agoal,
+      ~home,
+      ~away,
+      as.data.frame(resampled_data)
+    ))
+
+    hfa <- fit$par[["hfa"]]
+    expect_gt(hfa, 0.1)
+    expect_lt(hfa, 0.5)
+  })
 })

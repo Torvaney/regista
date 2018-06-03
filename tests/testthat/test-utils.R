@@ -1,5 +1,4 @@
 context("Utils")
-library(regista)
 
 test_that("Generating offense and defence dummies works", {
   teams <- factor(c("Arsenal", "Liverpool"))
