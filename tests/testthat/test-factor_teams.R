@@ -1,5 +1,4 @@
 context("Factor teams")
-library(regista)
 
 test_that("Character vectors are factorised correctly", {
   games <- data.frame(
