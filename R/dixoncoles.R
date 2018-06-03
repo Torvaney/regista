@@ -72,10 +72,6 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 #' @importFrom stats optim
 #' @export
 #' @examples
-#' # Add home field advantage dummy
-#' games <- premier_league_2010
-#' games$hfa <- TRUE
-#'
 #' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
 #'                       agoal ~ off(home) + def(home) + 0,
 #'                       data = premier_league_2010)

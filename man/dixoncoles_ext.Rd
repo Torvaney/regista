@@ -35,11 +35,7 @@ By specifying the model as a pair of formulas, it allows the user to
 estimate the effect of parameters beyond team strength.
 }
 \examples{
-# Add home field advantage dummy
-games <- premier_league_2010
-games$hfa <- TRUE
-
 fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
                       agoal ~ off(home) + def(home) + 0,
-                      data = games)
+                      data = premier_league_2010)
 }

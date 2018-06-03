@@ -11,5 +11,7 @@
 #'   \item{hgoal}{The number of goals scored by the home team}
 #'   \item{agoal}{The number of goals scored by the away team}
 #'   \item{result}{The match result (H/D/A)}
+#'   \item{hfa}{Home field advantage (whether the `home` team played at their
+#'              home stadium)}
 #' }
 "premier_league_2010"
