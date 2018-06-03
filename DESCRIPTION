@@ -16,5 +16,7 @@ Imports:
   lazyeval,
   purrr,
   rlang
-Suggests: testthat
+Suggests: 
+    testthat,
+    covr
 RoxygenNote: 6.0.1

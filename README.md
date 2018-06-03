@@ -7,6 +7,8 @@ regista
 
 [![Build Status](https://travis-ci.org/Torvaney/regista.svg?branch=master)](https://travis-ci.org/Torvaney/regista)
 
+[![Coverage status](https://codecov.io/gh/Torvaney/regista/branch/master/graph/badge.svg)](https://codecov.io/github/Torvaney/regista?branch=master)
+
 Overview
 --------
 

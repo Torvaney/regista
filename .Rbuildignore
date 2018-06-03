@@ -9,3 +9,4 @@
 
 # Directories
 Rmd  # Directory for documenting development process, design decisions etc
+^codecov\.yml$
