@@ -4,15 +4,19 @@
 \alias{dixoncoles_ext}
 \title{A generic Dixon-Coles model for estimating team strengths}
 \usage{
-dixoncoles_ext(f1, f2, data)
+dixoncoles_ext(f1, f2, data, method = "BFGS", control = list())
 }
 \arguments{
-\item{f1}{A formula describing the model for home goals}
+\item{f1}{A formula describing the model for home goals.}
 
-\item{f2}{A formula describing the model for away goals}
+\item{f2}{A formula describing the model for away goals.}
 
 \item{data}{Data frame, list or environment (or object coercible by
 `as.data.frame` to a data frame) containing the variables in the model.}
+
+\item{method}{The optimisation method to use (see `optim`).}
+
+\item{control}{Passed onto `optim`.}
 }
 \value{
 A list with component `par` containing the best set of parameters

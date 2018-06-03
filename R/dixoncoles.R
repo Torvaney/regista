@@ -59,10 +59,12 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 #' By specifying the model as a pair of formulas, it allows the user to
 #' estimate the effect of parameters beyond team strength.
 #'
-#' @param f1 A formula describing the model for home goals
-#' @param f2 A formula describing the model for away goals
+#' @param f1 A formula describing the model for home goals.
+#' @param f2 A formula describing the model for away goals.
 #' @param data Data frame, list or environment (or object coercible by
 #' `as.data.frame` to a data frame) containing the variables in the model.
+#' @param method The optimisation method to use (see `optim`).
+#' @param control Passed onto `optim`.
 #'
 #' @return A list with component `par` containing the best set of parameters
 #' found. See `optim` for details.
@@ -76,8 +78,8 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 #'
 #' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
 #'                       agoal ~ off(home) + def(home) + 0,
-#'                       data = games)
-dixoncoles_ext <- function(f1, f2, data) {
+#'                       data = premier_league_2010)
+dixoncoles_ext <- function(f1, f2, data, method = "BFGS", control = list()) {
   modeldata <- dc_modeldata(f1, f2, data)
 
   params <- rep_len(0, length(modeldata$vars) + 1)
@@ -86,8 +88,9 @@ dixoncoles_ext <- function(f1, f2, data) {
   res <- optim(
     params,
     dc_objective_function,
-    method = "BFGS",
-    modeldata = modeldata
+    method = method,
+    modeldata = modeldata,
+    control = control
   )
 
   res
