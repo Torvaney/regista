@@ -21,3 +21,8 @@ regista is not currently available on CRAN but can be downloaded from github lik
 # install.packages("devtools")
 devtools::install_github("torvaney/regista")
 ```
+
+Examples
+--------
+
+There is currently a short example available here: <http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/>
