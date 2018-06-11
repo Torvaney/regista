@@ -117,7 +117,7 @@ test_that("Both Dixon-Coles function return the same estimates", {
 test_that("Home advantage estimates are reasonable", {
   skip_if_not_installed("modelr")
   set.seed(2018)
-  lapply(pl_samples, function(data) {
+  lapply(1:5, function(data) {
     resampled_data <- modelr::resample_bootstrap(premier_league_2010)
     # Supress warnings related to poorly specified bounds (see #1)
     fit <- suppressWarnings(dixoncoles(
