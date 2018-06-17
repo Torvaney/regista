@@ -73,7 +73,8 @@ test_that("Constructing dummy variables from factors works", {
 
 test_that("Missing columns are filled in", {
   mat <- matrix(
-    c(1, 0, 1,  0, 1, 0),
+    c(1, 0, 1,
+      0, 1, 0),
     nrow = 3, ncol = 2,
     dimnames = list(NULL, c("a", "b"))
   )
@@ -133,4 +134,26 @@ test_that("Home advantage estimates are reasonable", {
     expect_gt(hfa, 0.1)
     expect_lt(hfa, 0.5)
   })
+})
+
+test_that("Weighting games works", {
+  # Give games where the home team wins a higher weight and compare HFA
+  # TODO: Come up with better + more granular tests
+  seed <- 2018-06-17
+  set.seed(seed)
+  equal_weight <- suppressWarnings(
+    dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
+                   f2 = agoal ~ off(away) + def(home) + 0,
+                   weights = ~ 1,
+                   data = premier_league_2010)
+  )
+  set.seed(seed)
+  high_hfa <- suppressWarnings(
+    dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
+                   f2 = agoal ~ off(away) + def(home) + 0,
+                   weights = ~ ifelse(hgoal > agoal, 1, 0.5),
+                   data = premier_league_2010)
+  )
+
+  expect_gt(high_hfa$par[["hfa"]], equal_weight$par[["hfa"]])
 })

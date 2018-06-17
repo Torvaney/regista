@@ -66,7 +66,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 #' @param f1 A formula describing the model for home goals.
 #' @param f2 A formula describing the model for away goals.
 #' @param weights A formula describing an expression to calculate the weight for
-#'   each game
+#'   each game.
 #' @param data Data frame, list or environment (or object coercible by
 #'   `as.data.frame` to a data frame) containing the variables in the model.
 #' @param method The optimisation method to use (see `optim`).
@@ -80,7 +80,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 #' @examples
 #' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
 #'                       agoal ~ off(home) + def(home) + 0,
-#'                       weights = ~ 1,
+#'                       weights = ~ 1,  # All games weighted equally
 #'                       data = premier_league_2010)
 dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = list()) {
   modeldata <- .dc_modeldata(f1, f2, weights, data)
