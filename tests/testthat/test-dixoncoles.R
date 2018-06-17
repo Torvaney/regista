@@ -25,7 +25,7 @@ test_that("Dependence calculation (tau) is correct", {
 
 test_that("Negative log likelihood follows poisson likelihood", {
   expect_nll_pois <- function(hg, ag, hr, ar) {
-    dc_nll <- regista:::.dc_negloglike(hg, ag, hr, ar, rho = 0)
+    dc_nll <- regista:::.dc_negloglike(hg, ag, hr, ar, rho = 0, weights = 1)
     pois_nll <- -(dpois(hg, hr, log = TRUE) + dpois(ag, ar, log = TRUE))
     expect_equal(dc_nll, pois_nll)
   }
@@ -38,7 +38,7 @@ test_that("Negative log likelihood follows poisson likelihood", {
 
 test_that("Negative log likelihood is using dependence parameter", {
   expect_nll_dep <- function(hg, ag, hr, ar, rho) {
-    dc_nll <- regista:::.dc_negloglike(hg, ag, hr, ar, rho)
+    dc_nll <- regista:::.dc_negloglike(hg, ag, hr, ar, rho, weights = 1)
     pois_ll <- dpois(hg, hr, log = TRUE) + dpois(ag, ar, log = TRUE)
     exp_nll <- -(pois_ll + log(regista:::.tau(hg, ag, hr, ar, rho)))
     expect_equal(dc_nll, exp_nll)
@@ -73,7 +73,8 @@ test_that("Constructing dummy variables from factors works", {
 
 test_that("Missing columns are filled in", {
   mat <- matrix(
-    c(1, 0, 1,  0, 1, 0),
+    c(1, 0, 1,
+      0, 1, 0),
     nrow = 3, ncol = 2,
     dimnames = list(NULL, c("a", "b"))
   )
@@ -107,6 +108,7 @@ test_that("Both Dixon-Coles function return the same estimates", {
   fit_ext <- suppressWarnings(
     dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
                    f2 = agoal ~ off(away) + def(home) + 0,
+                   weights = ~ 1,
                    data = premier_league_2010)
   )
   pars_ext <- sort(fit_ext$par)
@@ -132,4 +134,26 @@ test_that("Home advantage estimates are reasonable", {
     expect_gt(hfa, 0.1)
     expect_lt(hfa, 0.5)
   })
+})
+
+test_that("Weighting games works", {
+  # Give games where the home team wins a higher weight and compare HFA
+  # TODO: Come up with better + more granular tests
+  seed <- 2018-06-17
+  set.seed(seed)
+  equal_weight <- suppressWarnings(
+    dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
+                   f2 = agoal ~ off(away) + def(home) + 0,
+                   weights = ~ 1,
+                   data = premier_league_2010)
+  )
+  set.seed(seed)
+  high_hfa <- suppressWarnings(
+    dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
+                   f2 = agoal ~ off(away) + def(home) + 0,
+                   weights = ~ ifelse(hgoal > agoal, 1, 0.5),
+                   data = premier_league_2010)
+  )
+
+  expect_gt(high_hfa$par[["hfa"]], equal_weight$par[["hfa"]])
 })
