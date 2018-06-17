@@ -43,6 +43,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 
   res <- dixoncoles_ext(f1 = hgoal ~ off(hteam) + def(ateam) + hfa + 0,
                         f2 = agoal ~ off(ateam) + def(hteam) + 0,
+                        weights = ~ 1,
                         data = modelframe)
   res
 }
@@ -64,8 +65,10 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 #'
 #' @param f1 A formula describing the model for home goals.
 #' @param f2 A formula describing the model for away goals.
+#' @param weights A formula describing an expression to calculate the weight for
+#'   each game
 #' @param data Data frame, list or environment (or object coercible by
-#' `as.data.frame` to a data frame) containing the variables in the model.
+#'   `as.data.frame` to a data frame) containing the variables in the model.
 #' @param method The optimisation method to use (see `optim`).
 #' @param control Passed onto `optim`.
 #'
@@ -77,9 +80,10 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 #' @examples
 #' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
 #'                       agoal ~ off(home) + def(home) + 0,
+#'                       weights = ~ 1,
 #'                       data = premier_league_2010)
-dixoncoles_ext <- function(f1, f2, data, method = "BFGS", control = list()) {
-  modeldata <- .dc_modeldata(f1, f2, data)
+dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = list()) {
+  modeldata <- .dc_modeldata(f1, f2, weights, data)
 
   params <- rep_len(0, length(modeldata$vars) + 1)
   names(params) <- c(modeldata$vars, "rho")
@@ -87,9 +91,9 @@ dixoncoles_ext <- function(f1, f2, data, method = "BFGS", control = list()) {
   res <- optim(
     params,
     .dc_objective_function,
-    method = method,
     modeldata = modeldata,
-    control = control
+    method    = method,
+    control   = control
   )
 
   res
@@ -101,7 +105,7 @@ dixoncoles_ext <- function(f1, f2, data, method = "BFGS", control = list()) {
 #' @keywords internal
 #' @importFrom purrr %>% map reduce flatten_chr
 #' @importFrom lazyeval f_eval_lhs
-.dc_modeldata <- function(f1, f2, data) {
+.dc_modeldata <- function(f1, f2, weights, data) {
   terms1 <- .quo_terms(f1)
   terms2 <- .quo_terms(f2)
 
@@ -124,11 +128,12 @@ dixoncoles_ext <- function(f1, f2, data, method = "BFGS", control = list()) {
   mat2 <- mat2[, column_names]
 
   list(
-    vars = column_names,
-    y1 = f_eval_lhs(f1, data),
-    y2 = f_eval_lhs(f2, data),
-    mat1 = mat1,
-    mat2 = mat2
+    vars    = column_names,
+    y1      = f_eval_lhs(f1, data),
+    y2      = f_eval_lhs(f2, data),
+    mat1    = mat1,
+    mat2    = mat2,
+    weights = f_eval(weights, data)
   )
 }
 
@@ -154,11 +159,16 @@ dixoncoles_ext <- function(f1, f2, data, method = "BFGS", control = list()) {
 #' Dixon-Coles negative log likelihood
 #' @keywords internal
 #' @importFrom stats dpois
-.dc_negloglike <- function(hg, ag, home_rates, away_rates, rho) {
+.dc_negloglike <- function(hg, ag, home_rates, away_rates, rho, weights) {
   hprob <- dpois(hg, home_rates, log = TRUE)
   aprob <- dpois(ag, away_rates, log = TRUE)
 
-  -sum(hprob + aprob + log(.tau(hg, ag, home_rates, away_rates, rho)))
+  loglike <- hprob + aprob + log(.tau(hg, ag, home_rates, away_rates, rho))
+
+  # Create weighted pseudo-log likelihood
+  ploglike <- loglike * weights
+
+  -sum(ploglike)
 }
 
 #' Dixon-Coles objective function
@@ -175,7 +185,8 @@ dixoncoles_ext <- function(f1, f2, data, method = "BFGS", control = list()) {
     modeldata$y2,
     home_rates,
     away_rates,
-    rho
+    rho,
+    modeldata$weights
   )
 }
 

@@ -4,12 +4,15 @@
 \alias{dixoncoles_ext}
 \title{A generic Dixon-Coles model for estimating team strengths}
 \usage{
-dixoncoles_ext(f1, f2, data, method = "BFGS", control = list())
+dixoncoles_ext(f1, f2, weights, data, method = "BFGS", control = list())
 }
 \arguments{
 \item{f1}{A formula describing the model for home goals.}
 
 \item{f2}{A formula describing the model for away goals.}
+
+\item{weights}{A formula describing an expression to calculate the weight for
+each game}
 
 \item{data}{Data frame, list or environment (or object coercible by
 `as.data.frame` to a data frame) containing the variables in the model.}
@@ -37,5 +40,6 @@ estimate the effect of parameters beyond team strength.
 \examples{
 fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
                       agoal ~ off(home) + def(home) + 0,
+                      weights = ~ 1,
                       data = premier_league_2010)
 }
