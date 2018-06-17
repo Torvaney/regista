@@ -4,10 +4,10 @@
 \alias{factor_teams}
 \title{Coerce teamnames into factors}
 \usage{
-factor_teams(.data, columns)
+factor_teams(data, columns)
 }
 \arguments{
-\item{.data}{A data frame containing match data.}
+\item{data}{A data frame containing match data.}
 
 \item{columns}{A charater vector containing the names of columns
 containing team names.}

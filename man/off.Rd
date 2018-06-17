@@ -19,6 +19,8 @@ names into a factor of offence or defence levels
 }
 \examples{
 teams <- factor(c("Arsenal", "Liverpool", "Barcelona", "Dortmund"))
-team_off <- off(teams)
+off(teams)
+#> [1] off___Arsenal   off___Liverpool off___Barcelona off___Dortmund
+#> Levels: off___Arsenal off___Barcelona off___Dortmund off___Liverpool
 
 }

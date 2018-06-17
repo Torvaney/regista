@@ -14,10 +14,10 @@ numeric vector containing the observed home goals for a set of games.}
 numeric vector containing the observed away goals for a set of games.}
 
 \item{hteam}{A formula describing the home team column in `data`, or a
-numeric vector containing the home team name for a set of games.}
+vector containing the home team name for a set of games.}
 
 \item{ateam}{A formula describing the away team column in `data`, or a
-numeric vector containing the away team name for a set of games.}
+vector containing the away team name for a set of games.}
 
 \item{data}{Data frame, list or environment (or object coercible by
 `as.data.frame` to a data frame) containing the variables in the model.}
