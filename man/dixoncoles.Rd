@@ -4,7 +4,7 @@
 \alias{dixoncoles}
 \title{Dixon-Coles model for estimating team strengths}
 \usage{
-dixoncoles(hgoal, agoal, hteam, ateam, data)
+dixoncoles(hgoal, agoal, hteam, ateam, data, weights = ~1)
 }
 \arguments{
 \item{hgoal}{A formula describing the home goals column in `data`, or a
@@ -21,6 +21,9 @@ vector containing the away team name for a set of games.}
 
 \item{data}{Data frame, list or environment (or object coercible by
 `as.data.frame` to a data frame) containing the variables in the model.}
+
+\item{weights}{A formula describing an expression to calculate the weight for
+each game. All games weighted equally by default.}
 }
 \value{
 A list with component `par` containing the best set of parameters

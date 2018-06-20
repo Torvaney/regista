@@ -20,6 +20,8 @@
 #'   vector containing the away team name for a set of games.
 #' @param data Data frame, list or environment (or object coercible by
 #' `as.data.frame` to a data frame) containing the variables in the model.
+#' @param weights A formula describing an expression to calculate the weight for
+#'   each game. All games weighted equally by default.
 #'
 #' @return A list with component `par` containing the best set of parameters
 #' found. See `optim` for details.
@@ -29,12 +31,13 @@
 #' @examples
 #' res <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
 #'
-dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
+dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~ 1) {
   modelframe <- data.frame(
     hgoal = f_eval(hgoal, data),
     agoal = f_eval(agoal, data),
     hteam = f_eval(hteam, data),
     ateam = f_eval(ateam, data),
+    weights = f_eval(weights, data),
     hfa   = TRUE
   )
 
@@ -43,7 +46,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data) {
 
   res <- dixoncoles_ext(f1 = hgoal ~ off(hteam) + def(ateam) + hfa + 0,
                         f2 = agoal ~ off(ateam) + def(hteam) + 0,
-                        weights = ~ 1,
+                        weights = ~ weights,
                         data = modelframe)
   res
 }

@@ -18,5 +18,6 @@ Imports:
   rlang
 Suggests: 
     testthat,
-    covr
+    covr,
+    modelr
 RoxygenNote: 6.0.1
