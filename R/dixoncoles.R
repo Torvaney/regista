@@ -31,14 +31,14 @@
 #' @examples
 #' res <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
 #'
-dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~ 1) {
+dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
   modelframe <- data.frame(
-    hgoal = f_eval(hgoal, data),
-    agoal = f_eval(agoal, data),
-    hteam = f_eval(hteam, data),
-    ateam = f_eval(ateam, data),
+    hgoal   = f_eval(hgoal, data),
+    agoal   = f_eval(agoal, data),
+    hteam   = f_eval(hteam, data),
+    ateam   = f_eval(ateam, data),
     weights = f_eval(weights, data),
-    hfa   = TRUE
+    hfa     = TRUE
   )
 
   # Make sure team names are factors
@@ -46,7 +46,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~ 1) {
 
   res <- dixoncoles_ext(f1 = hgoal ~ off(hteam) + def(ateam) + hfa + 0,
                         f2 = agoal ~ off(ateam) + def(hteam) + 0,
-                        weights = ~ weights,
+                        weights = ~weights,
                         data = modelframe)
   res
 }
@@ -83,7 +83,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~ 1) {
 #' @examples
 #' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
 #'                       agoal ~ off(home) + def(home) + 0,
-#'                       weights = ~ 1,  # All games weighted equally
+#'                       weights = ~1,  # All games weighted equally
 #'                       data = premier_league_2010)
 dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = list()) {
   modeldata <- .dc_modeldata(f1, f2, weights, data)
@@ -102,7 +102,94 @@ dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = lis
   res
 }
 
-# Auxiliary functions ---------------------------------------------------------
+# Dixon-Coles class ------------------------------------------------------------
+
+#' Predict method for Dixon-Coles model fits
+#'
+#' @description
+#'
+#' Predicted values based on a Dixon Coles model object
+predict.dixoncoles <- function(object, newdata, type = c("response", "outcomes"), ...) {
+  # Create model matrix for newdata
+  modeldata <- .dc_modeldata(
+    object$f1,
+    object$f2,
+    object$weights,
+    newdata
+  )
+
+  # Matrix multiplication to get Poisson means
+  rates <- .dc_get_rates(object$par, modeldata)
+
+  # Return only the rates if "response" is chosen
+  if (type == "response") {
+    return(data.frame(home_rate = rates$home,
+                      away_rate = rates$away))
+  }
+
+  if (type == "outcomes") {
+    return(.dc_predict_scorelines(rates, ???))
+  }
+
+  # TODO
+}
+
+#' Calculate the probability of scorelines occuring for a given set of matches
+#' @keywords internal
+#' @importFrom purrr map2
+.dc_predict_scorelines <- function(rates, up_to = 20, threshold = ???) {
+  # Calculate the probability of each scoreline up to 20-20(?) for each game
+  map2(
+    rates$home,
+    rates$away,
+    .dc_predict_scorelines_once,
+    rho       = rates$rho,
+    up_to     = up_to,
+    threshold = threshold
+  )
+}
+
+#' Calculate the probability of scorelines occuring for a given match
+#' @keywords internal
+#' @importFrom stats dpois
+#' @importFrom purrr map2_dbl
+.dc_predict_scorelines_once <- function(home_rate, away_rate, rho, up_to, threshold) {
+  home_probs <- dpois(0:up_to, home_rate)
+  away_probs <- dpois(0:up_to, away_rate)
+
+  scorelines <- expand.grid(hgoal = 0:up_to,
+                            agoal = 0:up_to)
+
+  hprob <- dpois(scorelines$hgoal, home_rate)
+  aprob <- dpois(scorelines$agoal, away_rate)
+  tau <- map2_dbl(
+    scorelines$hgoal,
+    scorelines$agoal,
+    .tau,
+    home_rates = home_rate,
+    away_rates = away_rate,
+    rho = rho
+  )
+
+  scorelines$prob <- hprob * aprob * tau
+
+  # TODO:
+  # Then, filter out the ~0% (< threshold) rows
+  # Add tests
+
+  scorelines
+}
+
+plot.dixoncoles <- function(...) {
+  # TODO
+}
+
+# See broom::tidy
+tidy.dixoncoles <- function(...) {
+  # TODO
+}
+
+# Auxiliary fitting functions --------------------------------------------------
 
 #' Get model data for a Dixon-Coles model
 #' @keywords internal
@@ -174,21 +261,32 @@ dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = lis
   -sum(ploglike)
 }
 
-#' Dixon-Coles objective function
+#' Get estimated rates for home and away goals
 #' @keywords internal
-.dc_objective_function <- function(params, modeldata) {
+#' TODO: Use a better name (parse_params?)
+.dc_get_rates <- function(params, modeldata) {
   rho <- params["rho"]
   rate_params <- matrix(params[names(params) != "rho"], nrow = 1)
 
   home_rates <- exp(rate_params %*% t(modeldata$mat1))
   away_rates <- exp(rate_params %*% t(modeldata$mat2))
 
+  list(home = home_rates,
+       away = away_rates,
+       rho  = rho)
+}
+
+#' Dixon-Coles objective function
+#' @keywords internal
+.dc_objective_function <- function(params, modeldata) {
+  rates <- .dc_get_rates(params, modeldata)
+
   .dc_negloglike(
     modeldata$y1,
     modeldata$y2,
-    home_rates,
-    away_rates,
-    rho,
+    rates$home,
+    rates$away,
+    rates$rho,
     modeldata$weights
   )
 }

@@ -35,3 +35,10 @@ def <- function(x) {
 .def_str <- function(x) {
   paste0("def___", x)
 }
+
+# ------------------------------------------------------------------------------
+
+#' Aggregate scoreline probabilities to 1X2 probabilities
+scorelines_to_outcomes <- function(...) {
+  # TODO
+}

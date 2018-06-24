@@ -138,7 +138,7 @@ test_that("Home advantage estimates are reasonable", {
 
 test_that("Weighting games works", {
   # Give games where the home team wins a higher weight and compare HFA
-  # TODO: Come up with better + more granular tests
+  # TODO: Come up with better + more granular tests for this feature
   seed <- 2018-06-17
   set.seed(seed)
   equal_weight <- suppressWarnings(
