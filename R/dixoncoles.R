@@ -24,7 +24,7 @@
 #'   each game. All games weighted equally by default.
 #'
 #' @return A list with component `par` containing the best set of parameters
-#' found. See `optim` for details.
+#'   found. See `optim` for details.
 #'
 #' @importFrom lazyeval f_eval
 #' @export
@@ -48,6 +48,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
                         f2 = agoal ~ off(ateam) + def(hteam) + 0,
                         weights = ~weights,
                         data = modelframe)
+
   res
 }
 
@@ -76,13 +77,13 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
 #' @param control Passed onto `optim`.
 #'
 #' @return A list with component `par` containing the best set of parameters
-#' found. See `optim` for details.
+#'   found. See `optim` for details.
 #'
 #' @importFrom stats optim
 #' @export
 #' @examples
 #' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
-#'                       agoal ~ off(home) + def(home) + 0,
+#'                       agoal ~ off(away) + def(home) + 0,
 #'                       weights = ~1,  # All games weighted equally
 #'                       data = premier_league_2010)
 dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = list()) {
@@ -99,17 +100,41 @@ dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = lis
     control   = control
   )
 
-  res
+  res$f1 <- f1
+  res$f2 <- f2
+  res$weights <- weights
+
+  structure(res, class = "dixoncoles")
 }
 
 # Dixon-Coles class ------------------------------------------------------------
+
+print.dixoncoles <- function(x, ...) {
+  # TODO
+  print(x)
+}
 
 #' Predict method for Dixon-Coles model fits
 #'
 #' @description
 #'
-#' Predicted values based on a Dixon Coles model object
-predict.dixoncoles <- function(object, newdata, type = c("response", "outcomes"), ...) {
+#' Predicted rates or scorelines based on a Dixon Coles model object
+#'
+#' @param object Object of class inheriting from `dixoncoles`.
+#' @param newdata A data frame in which to look for variables to predict
+#' @param type Type of prediction (rates or scorelines).
+#' @param up_to If `type = "scorelines"`, the maximum number of goals for which
+#'   to calculate the probability of occurring in each match.
+#' @param threshold If `type = "scorelines"`, scorelines with a probability
+#'   below `threshold` will not be returned.
+#' @param ... Arguments passed from other methods
+#'
+#' @return TODO
+#'
+#' @export
+predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
+                               up_to = 50, threshold = 1e-8, ...) {
+
   # Create model matrix for newdata
   modeldata <- .dc_modeldata(
     object$f1,
@@ -119,26 +144,28 @@ predict.dixoncoles <- function(object, newdata, type = c("response", "outcomes")
   )
 
   # Matrix multiplication to get Poisson means
-  rates <- .dc_get_rates(object$par, modeldata)
+  rate_info <- .dc_rate_info(object$par, modeldata)
 
   # Return only the rates if "response" is chosen
-  if (type == "response") {
-    return(data.frame(home_rate = rates$home,
-                      away_rate = rates$away))
+  rates <- data.frame(home_rate = c(rate_info$home),
+                      away_rate = c(rate_info$away))
+  if (type == "rates") {
+    return(rates)
   }
 
-  if (type == "outcomes") {
-    return(.dc_predict_scorelines(rates, ???))
+  if (type == "scorelines") {
+    return(.dc_predict_scorelines(rate_info, up_to, threshold))
   }
 
-  # TODO
+  warning("Unknown response type. Defaulting to type = \"rates\"")
+  rates
 }
 
 #' Calculate the probability of scorelines occuring for a given set of matches
 #' @keywords internal
 #' @importFrom purrr map2
-.dc_predict_scorelines <- function(rates, up_to = 20, threshold = ???) {
-  # Calculate the probability of each scoreline up to 20-20(?) for each game
+.dc_predict_scorelines <- function(rates, up_to, threshold) {
+  # Calculate the probability of each scoreline for each game
   map2(
     rates$home,
     rates$away,
@@ -173,9 +200,8 @@ predict.dixoncoles <- function(object, newdata, type = c("response", "outcomes")
 
   scorelines$prob <- hprob * aprob * tau
 
-  # TODO:
-  # Then, filter out the ~0% (< threshold) rows
-  # Add tests
+  # Filter out the ~0% (< threshold) rows
+  scorelines <- scorelines[scorelines$prob > threshold, ]
 
   scorelines
 }
@@ -263,8 +289,7 @@ tidy.dixoncoles <- function(...) {
 
 #' Get estimated rates for home and away goals
 #' @keywords internal
-#' TODO: Use a better name (parse_params?)
-.dc_get_rates <- function(params, modeldata) {
+.dc_rate_info <- function(params, modeldata) {
   rho <- params["rho"]
   rate_params <- matrix(params[names(params) != "rho"], nrow = 1)
 
@@ -279,7 +304,7 @@ tidy.dixoncoles <- function(...) {
 #' Dixon-Coles objective function
 #' @keywords internal
 .dc_objective_function <- function(params, modeldata) {
-  rates <- .dc_get_rates(params, modeldata)
+  rates <- .dc_rate_info(params, modeldata)
 
   .dc_negloglike(
     modeldata$y1,
