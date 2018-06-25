@@ -96,6 +96,35 @@ test_that("Missing columns are filled in", {
   expect_cols(mat, "longname", c("a", "b", "longname"))
 })
 
+test_that("Rates are calculated correctly", {
+  rho <- -0.14
+  params <- c(off___teamA =  0.0, off___teamB = 0.0,
+              def___teamA = -0.1, def___teamB = 0.1,
+              rho = rho)
+  modeldata <- list(
+    mat1 = matrix(c(1, 0, 0, 1), nrow = 1),
+    mat2 = matrix(c(0, 1, 1, 0), nrow = 1)
+  )
+
+  rates <- regista:::.dc_rate_info(params, modeldata)
+
+  expect_equivalent(rates$rho, rho)
+  expect_equivalent(rates$home, exp(params["off___teamA"] + params["def___teamB"]))
+  expect_equivalent(rates$away, exp(params["off___teamB"] + params["def___teamA"]))
+})
+
+test_that("Simple Dixon-Coles can handle character teams", {
+  suppressWarnings({
+    fit_fct <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+
+    premier_league_2010$home <- as.character(premier_league_2010$home)
+    premier_league_2010$away <- as.character(premier_league_2010$away)
+    fit_chr <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+  })
+
+  expect_equal(fit_chr$par, fit_fct$par)
+})
+
 test_that("Both Dixon-Coles function return the same estimates", {
   seed <- 2018-06-03
   set.seed(seed)
@@ -156,4 +185,21 @@ test_that("Weighting games works", {
   )
 
   expect_gt(high_hfa$par[["hfa"]], equal_weight$par[["hfa"]])
+})
+
+test_that("Games can be predicted", {
+  suppressWarnings({
+    fit_simple <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+    fit_ext <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
+                              agoal ~ off(away) + def(home) + 0,
+                              weights = ~1,
+                              data = premier_league_2010)
+  })
+
+  predict(fit_simple, premier_league_2010, type = "rates")
+  predict(fit_ext, premier_league_2010, type = "rates")
+
+  # TODO: speed up
+  # predict(fit_simple, premier_league_2010, type = "scorelines")
+  # predict(fit_ext, premier_league_2010, type = "scorelines")
 })
