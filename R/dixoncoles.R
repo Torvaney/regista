@@ -20,35 +20,25 @@
 #'   vector containing the away team name for a set of games.
 #' @param data Data frame, list or environment (or object coercible by
 #' `as.data.frame` to a data frame) containing the variables in the model.
+#' @param hfa A formula describing an expression to calculate the weight for
+#'   each game. All games weighted equally by default.
 #' @param weights A formula describing an expression to calculate the weight for
 #'   each game. All games weighted equally by default.
 #'
 #' @return A list with component `par` containing the best set of parameters
 #'   found. See `optim` for details.
 #'
-#' @importFrom lazyeval f_eval
+#' @importFrom lazyeval f_eval f_interp f_new uq
+#' @importFrom rlang quo_text
 #' @export
 #' @examples
-#' res <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+#' fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
 #'
-dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
-  modelframe <- data.frame(
-    hgoal   = f_eval(hgoal, data),
-    agoal   = f_eval(agoal, data),
-    hteam   = f_eval(hteam, data),
-    ateam   = f_eval(ateam, data),
-    weights = f_eval(weights, data),
-    hfa     = TRUE
-  )
+dixoncoles <- function(hgoal, agoal, hteam, ateam, data, hfa = ~hfa, weights = ~1) {
+  f1 <- f_new(uq(f_interp(~ off(uq(hteam)) + def(uq(ateam)) + uq(hfa) + 0)), uq(hgoal))
+  f2 <- f_new(uq(f_interp(~ off(uq(ateam)) + def(uq(hteam)) + 0)), uq(agoal))
 
-  # Make sure team names are factors
-  modelframe <- factor_teams(modelframe, c("hteam", "ateam"))
-
-  res <- dixoncoles_ext(f1 = hgoal ~ off(hteam) + def(ateam) + hfa + 0,
-                        f2 = agoal ~ off(ateam) + def(hteam) + 0,
-                        weights = ~weights,
-                        data = modelframe)
-
+  res <- dixoncoles_ext(f1, f2, weights = weights, data = data)
   res
 }
 
