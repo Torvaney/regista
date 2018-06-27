@@ -34,11 +34,17 @@
 #' @examples
 #' fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
 #'
-dixoncoles <- function(hgoal, agoal, hteam, ateam, data, hfa = ~hfa, weights = ~1) {
-  f1 <- f_new(uq(f_interp(~ off(uq(hteam)) + def(uq(ateam)) + uq(hfa) + 0)), uq(hgoal))
+dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
+  f1 <- f_new(uq(f_interp(~ off(uq(hteam)) + def(uq(ateam)) + hfa + 0)), uq(hgoal))
   f2 <- f_new(uq(f_interp(~ off(uq(ateam)) + def(uq(hteam)) + 0)), uq(agoal))
 
+  data$hfa <- TRUE
+
   res <- dixoncoles_ext(f1, f2, weights = weights, data = data)
+
+  # Hack to let predict.dixoncoles know to add HFA
+  res$implicit_hfa <- TRUE
+
   res
 }
 
@@ -94,6 +100,8 @@ dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = lis
   res$f2 <- f2
   res$weights <- weights
 
+  res$implied_hfa <- FALSE
+
   structure(res, class = "dixoncoles")
 }
 
@@ -124,6 +132,10 @@ print.dixoncoles <- function(x, ...) {
 #' @export
 predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
                                up_to = 50, threshold = 1e-8, ...) {
+
+  if (res$implicit_hfa == TRUE) {
+    newdata$hfa <- TRUE
+  }
 
   # Create model matrix for newdata
   modeldata <- .dc_modeldata(
@@ -179,10 +191,10 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 
   hprob <- dpois(scorelines$hgoal, home_rate)
   aprob <- dpois(scorelines$agoal, away_rate)
-  tau <- map2_dbl(
+
+  tau <- .tau(
     scorelines$hgoal,
     scorelines$agoal,
-    .tau,
     home_rates = home_rate,
     away_rates = away_rate,
     rho = rho
