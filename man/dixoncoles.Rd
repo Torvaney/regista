@@ -24,10 +24,13 @@ vector containing the away team name for a set of games.}
 
 \item{weights}{A formula describing an expression to calculate the weight for
 each game. All games weighted equally by default.}
+
+\item{hfa}{A formula describing an expression to calculate the weight for
+each game. All games weighted equally by default.}
 }
 \value{
 A list with component `par` containing the best set of parameters
-found. See `optim` for details.
+  found. See `optim` for details.
 }
 \description{
 This is an implementation of the Dixon-Coles model for estimating soccer
@@ -39,6 +42,6 @@ Statistical Society: Series C (Applied Statistics) 46, no. 2 (1997):
 265-280.
 }
 \examples{
-res <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
 
 }

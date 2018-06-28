@@ -100,7 +100,7 @@ dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = lis
   res$f2 <- f2
   res$weights <- weights
 
-  res$implied_hfa <- FALSE
+  res$implicit_hfa <- FALSE
 
   structure(res, class = "dixoncoles")
 }
@@ -133,7 +133,7 @@ print.dixoncoles <- function(x, ...) {
 predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
                                up_to = 50, threshold = 1e-8, ...) {
 
-  if (res$implicit_hfa == TRUE) {
+  if (object$implicit_hfa == TRUE) {
     newdata$hfa <- TRUE
   }
 

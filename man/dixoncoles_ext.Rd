@@ -23,7 +23,7 @@ each game.}
 }
 \value{
 A list with component `par` containing the best set of parameters
-found. See `optim` for details.
+  found. See `optim` for details.
 }
 \description{
 This is an implementation of the Dixon-Coles model for estimating soccer
@@ -39,7 +39,7 @@ estimate the effect of parameters beyond team strength.
 }
 \examples{
 fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
-                      agoal ~ off(home) + def(home) + 0,
-                      weights = ~ 1,  # All games weighted equally
+                      agoal ~ off(away) + def(home) + 0,
+                      weights = ~1,  # All games weighted equally
                       data = premier_league_2010)
 }

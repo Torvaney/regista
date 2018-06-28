@@ -196,10 +196,11 @@ test_that("Games can be predicted", {
                               data = premier_league_2010)
   })
 
-  predict(fit_simple, premier_league_2010, type = "rates")
-  predict(fit_ext, premier_league_2010, type = "rates")
+  rates_simple <- predict(fit_simple, premier_league_2010, type = "rates")
+  rates_ext <- predict(fit_ext, premier_league_2010, type = "rates")
+  expect_equal(rates_simple, rates_ext)
 
-  # TODO: speed up
-  # predict(fit_simple, premier_league_2010, type = "scorelines")
-  # predict(fit_ext, premier_league_2010, type = "scorelines")
+  scorelines_simple <- predict(fit_simple, premier_league_2010, type = "scorelines")
+  scorelines_ext <- predict(fit_ext, premier_league_2010, type = "scorelines")
+  expect_equal(scorelines_simple, scorelines_ext)
 })
