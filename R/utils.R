@@ -39,6 +39,19 @@ def <- function(x) {
 # ------------------------------------------------------------------------------
 
 #' Aggregate scoreline probabilities to 1X2 probabilities
-scorelines_to_outcomes <- function(...) {
-  # TODO
+#'
+#' @description
+#' Often we are more interested in the outcome of a match (home win, draw,
+#' away win) than we are in the scorelines. This is a helper function that
+#' aggregates scoreline probabilities to outcome probabilities.
+scorelines_to_outcomes <- function(scorelines, hgoal = ~hgoal, agoal = ~agoal, prob = ~prob) {
+  require(dplyr)
+  scorelines %>%
+    mutate(outcome = case_when(
+      hgoal > agoal  ~ "home_win",
+      agoal > hgoal  ~ "away_win",
+      hgoal == agoal ~ "draw"
+    )) %>%
+    count(outcome, wt = prob) %>%
+    rename(prob = n)
 }
