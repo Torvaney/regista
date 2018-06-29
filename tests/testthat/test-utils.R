@@ -12,21 +12,37 @@ test_that("Generating offense and defence dummies works", {
 
 
 test_that("Scorelines are aggregated accurately", {
-  scorelines <- tibble::tribble(
-    ~hgoal, ~agoal, ~prob,
-         0,      0,  0.25,
-         1,      0,  0.25,
-         0,      1,  0.25,
-         1,      1,  0.15,
-         2,      1,  0.10,
-  )
+  create_scorelines <- function(p00, p10, p01, p11) {
+    tibble::tribble(
+      ~hgoal, ~agoal, ~prob,
+           0,      0,   p00,
+           1,      0,   p10,
+           0,      1,   p01,
+           1,      1,   p11,
+           2,      1,   1 - sum(p00, p10, p01, p11)
+    )
+  }
 
-  outcomes <- tibble::tribble(
+  expect_equal_scorelines <- function(p00, p10, p01, p11) {
+    scorelines <- create_scorelines(p00, p10, p01, p11)
+
+    p21 <- 1 - sum(p00, p10, p01, p11)
+    hw <- p10 + p21
+    d <- p00 + p11
+    aw <- p01
+
+    outcomes <- tibble::tribble(
       ~outcome, ~prob,
-    "home_win",  0.35,
-        "draw",  0.40,
-    "away_win",  0.25
-  )
+    "home_win",    hw,
+        "draw",     d,
+    "away_win",    aw
+    )
 
-  expect_equal(outcomes, scorelines_to_outcomes(scorelines))
+    expect_equal(outcomes, scorelines_to_outcomes(scorelines))
+  }
+
+  expect_equal_scorelines(0.25, 0.25, 0.25, 0.15)
+  expect_equal_scorelines(1.00, 0.00, 0.00, 0.00)
+  expect_equal_scorelines(0.00, 1.00, 0.00, 0.00)
+  expect_equal_scorelines(0.00, 0.00, 1.00, 0.00)
 })

@@ -19,5 +19,6 @@ Imports:
 Suggests: 
     testthat,
     covr,
-    modelr
+    modelr,
+    tibble
 RoxygenNote: 6.0.1
