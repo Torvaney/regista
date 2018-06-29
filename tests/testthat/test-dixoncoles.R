@@ -113,17 +113,18 @@ test_that("Rates are calculated correctly", {
   expect_equivalent(rates$away, exp(params["off___teamB"] + params["def___teamA"]))
 })
 
-test_that("Simple Dixon-Coles can handle character teams", {
-  suppressWarnings({
-    fit_fct <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
-
-    premier_league_2010$home <- as.character(premier_league_2010$home)
-    premier_league_2010$away <- as.character(premier_league_2010$away)
-    fit_chr <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
-  })
-
-  expect_equal(fit_chr$par, fit_fct$par)
-})
+# Handled by an error/warning for now
+# test_that("Simple Dixon-Coles can handle character teams", {
+#   suppressWarnings({
+#     fit_fct <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+#
+#     premier_league_2010$home <- as.character(premier_league_2010$home)
+#     premier_league_2010$away <- as.character(premier_league_2010$away)
+#     fit_chr <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+#   })
+#
+#   expect_equal(fit_chr$par, fit_fct$par)
+# })
 
 test_that("Both Dixon-Coles function return the same estimates", {
   seed <- 2018-06-03
