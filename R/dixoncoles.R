@@ -35,6 +35,18 @@
 #' fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
 #'
 dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
+
+  # Check input
+  hvar <- f_eval(hteam, data)
+  avar <- f_eval(ateam, data)
+  if (!(is.factor(hvar) & is.factor(avar))) {
+    stop("home and away team variables should be factors (see factor_teams)")
+  }
+  if (levels(hvar) != levels(avar)) {
+    warning("home and away team variables should have the same levels (see factor_teams)")
+  }
+
+  # Fit the model
   f1 <- f_new(uq(f_interp(~ off(uq(hteam)) + def(uq(ateam)) + hfa + 0)), uq(hgoal))
   f2 <- f_new(uq(f_interp(~ off(uq(ateam)) + def(uq(hteam)) + 0)), uq(agoal))
 
@@ -206,6 +218,10 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
   scorelines <- scorelines[scorelines$prob > threshold, ]
 
   scorelines
+}
+
+summary.dixoncoles <- function(...) {
+  # TODO
 }
 
 plot.dixoncoles <- function(...) {
