@@ -42,7 +42,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
   if (!(is.factor(hvar) & is.factor(avar))) {
     stop("home and away team variables should be factors (see factor_teams)")
   }
-  if (levels(hvar) != levels(avar)) {
+  if (!setequal(levels(hvar), levels(avar))) {
     warning("home and away team variables should have the same levels (see factor_teams)")
   }
 
