@@ -119,9 +119,18 @@ dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = lis
 
 # Dixon-Coles class ------------------------------------------------------------
 
+#' @importFrom glue glue
 print.dixoncoles <- function(x, ...) {
-  # TODO
-  print(x)
+  msg <- glue("Dixon-Coles model with specification:
+
+               Home goals: {deparse(x$f1)}
+               Away goals: {deparse(x$f2)}
+               Weights   : {deparse(x$weights)}")
+
+  cat("\n")
+  cat(msg)
+  cat("\n\n")
+  invisible(x)
 }
 
 #' Predict method for Dixon-Coles model fits
