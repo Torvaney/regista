@@ -45,6 +45,11 @@ def <- function(x) {
 #' away win) than we are in the scorelines. This is a helper function that
 #' aggregates scoreline probabilities to outcome probabilities.
 #'
+#' @param scorelines A dataframe containing the scoreline probabilities
+#' @param hgoal The column containing home goals
+#' @param agoal The column containing away goals
+#' @param prob The column containing the probability of that given scoreline
+#'
 #' @importFrom lazyeval f_eval
 #' @importFrom purrr map_dbl
 #' @importFrom glue glue

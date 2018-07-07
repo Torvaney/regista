@@ -20,8 +20,6 @@
 #'   vector containing the away team name for a set of games.
 #' @param data Data frame, list or environment (or object coercible by
 #' `as.data.frame` to a data frame) containing the variables in the model.
-#' @param hfa A formula describing an expression to calculate the weight for
-#'   each game. All games weighted equally by default.
 #' @param weights A formula describing an expression to calculate the weight for
 #'   each game. All games weighted equally by default.
 #'

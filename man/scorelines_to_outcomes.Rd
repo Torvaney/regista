@@ -7,6 +7,15 @@
 scorelines_to_outcomes(scorelines, hgoal = ~hgoal, agoal = ~agoal,
   prob = ~prob)
 }
+\arguments{
+\item{scorelines}{A dataframe containing the scoreline probabilities}
+
+\item{hgoal}{The column containing home goals}
+
+\item{agoal}{The column containing away goals}
+
+\item{prob}{The column containing the probability of that given scoreline}
+}
 \description{
 Often we are more interested in the outcome of a match (home win, draw,
 away win) than we are in the scorelines. This is a helper function that
