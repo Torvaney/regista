@@ -229,27 +229,6 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
   scorelines
 }
 
-
-residuals.dixoncoles <- function(object, ...) {
-  # TODO
-}
-
-#' @importFrom glue glue
-summary.dixoncoles <- function(object, ...) {
-  msg <- glue("Dixon-Coles model with specification:
-
-               Home goals: {deparse(object$f1)}
-               Away goals: {deparse(object$f2)}
-               Weights   : {deparse(object$weights)}")
-
-  structure(x, class = "summary.dixoncoles")
-}
-
-# See broom::tidy
-tidy.dixoncoles <- function(...) {
-  # TODO
-}
-
 # Auxiliary fitting functions --------------------------------------------------
 
 #' Get model data for a Dixon-Coles model
