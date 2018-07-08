@@ -118,6 +118,7 @@ dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = lis
 # Dixon-Coles class ------------------------------------------------------------
 
 #' @importFrom glue glue
+#' @export
 print.dixoncoles <- function(x, ...) {
   msg <- glue("Dixon-Coles model with specification:
 
