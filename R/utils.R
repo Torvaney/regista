@@ -53,6 +53,8 @@ def <- function(x) {
 #' @importFrom lazyeval f_eval
 #' @importFrom purrr map_dbl
 #' @importFrom glue glue
+#'
+#' @export
 scorelines_to_outcomes <- function(scorelines, hgoal = ~hgoal, agoal = ~agoal, prob = ~prob) {
   hgoals <- f_eval(hgoal, scorelines)
   agoals <- f_eval(agoal, scorelines)
