@@ -23,7 +23,9 @@ below `threshold` will not be returned.}
 \item{...}{Arguments passed from other methods}
 }
 \value{
-TODO
+If `type = "rates"`, a dataframe of each teams' estimated goalscoring
+rate. If `type = "scorelines"`, a list in which each element is a dataframe
+of scorelines and their estimated probabilities.
 }
 \description{
 Predicted rates or scorelines based on a Dixon Coles model object

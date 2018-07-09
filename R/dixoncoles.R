@@ -147,7 +147,9 @@ print.dixoncoles <- function(x, ...) {
 #'   below `threshold` will not be returned.
 #' @param ... Arguments passed from other methods
 #'
-#' @return TODO
+#' @return If `type = "rates"`, a dataframe of each teams' estimated goalscoring
+#' rate. If `type = "scorelines"`, a list in which each element is a dataframe
+#' of scorelines and their estimated probabilities.
 #'
 #' @export
 predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
