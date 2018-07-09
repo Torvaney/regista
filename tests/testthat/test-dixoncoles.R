@@ -204,4 +204,10 @@ test_that("Games can be predicted", {
   scorelines_simple <- predict(fit_simple, premier_league_2010, type = "scorelines")
   scorelines_ext <- predict(fit_ext, premier_league_2010, type = "scorelines")
   expect_equal(scorelines_simple, scorelines_ext)
+
+  # A single game can also be predicted
+  first_game <- head(premier_league_2010, 1)
+  rates_simple <- predict(fit_simple, first_game, type = "rates")
+  rates_ext <- predict(fit_ext, first_game, type = "rates")
+  expect_equal(rates_simple, rates_ext)
 })

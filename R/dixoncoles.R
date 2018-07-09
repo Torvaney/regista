@@ -255,8 +255,10 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
   mat2 <- reduce(column_names, .fill_if_missing, .init = mat2)
 
   # Ensure both matrices have the same column ordering
-  mat1 <- mat1[, column_names]
-  mat2 <- mat2[, column_names]
+  # We have to use matrix to ensure that it retains it's dimensions when
+  # there's just 1 observation (for instance when calling predict.dixoncoles)
+  mat1 <- matrix(mat1[, column_names], nrow = nrow(mat1))
+  mat2 <- matrix(mat2[, column_names], nrow = nrow(mat2))
 
   list(
     vars    = column_names,
