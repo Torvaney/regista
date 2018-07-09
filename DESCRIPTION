@@ -18,8 +18,8 @@ Imports:
   purrr,
   rlang
 Suggests: 
-    testthat,
-    covr,
-    modelr,
-    tibble
+  testthat,
+  covr,
+  modelr,
+  tibble
 RoxygenNote: 6.0.1
