@@ -25,4 +25,7 @@ devtools::install_github("torvaney/regista")
 Examples
 --------
 
-There is currently a short example available here: <http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/>
+There is currently a couple of short examples available here:
+
+-   <http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/>
+-   <http://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/>
