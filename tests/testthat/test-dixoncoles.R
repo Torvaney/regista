@@ -152,13 +152,15 @@ test_that("Home advantage estimates are reasonable", {
   lapply(1:5, function(data) {
     resampled_data <- modelr::resample_bootstrap(premier_league_2010)
     # Supress warnings related to poorly specified bounds (see #1)
-    fit <- suppressWarnings(dixoncoles(
-      ~hgoal,
-      ~agoal,
-      ~home,
-      ~away,
-      as.data.frame(resampled_data)
-    ))
+    fit <- suppressWarnings(
+      dixoncoles(
+        ~hgoal,
+        ~agoal,
+        ~home,
+        ~away,
+        as.data.frame(resampled_data)
+      )
+    )
 
     hfa <- fit$par[["hfa"]]
     expect_gt(hfa, 0.1)

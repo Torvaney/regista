@@ -22,6 +22,7 @@
 #' `as.data.frame` to a data frame) containing the variables in the model.
 #' @param weights A formula describing an expression to calculate the weight for
 #'   each game. All games weighted equally by default.
+#' @param ... Arguments passed onto `dixoncoles_ext`.
 #'
 #' @return A list with component `par` containing the best set of parameters
 #'   found. See `optim` for details.
@@ -32,7 +33,7 @@
 #' @examples
 #' fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
 #'
-dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
+dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1, ...) {
 
   # Check input
   hvar <- f_eval(hteam, data)
@@ -50,7 +51,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
 
   data$hfa <- TRUE
 
-  res <- dixoncoles_ext(f1, f2, weights = weights, data = data)
+  res <- dixoncoles_ext(f1, f2, weights = weights, data = data, ...)
 
   # Hack to let predict.dixoncoles know to add HFA
   res$implicit_hfa <- TRUE
@@ -79,8 +80,9 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
 #'   each game.
 #' @param data Data frame, list or environment (or object coercible by
 #'   `as.data.frame` to a data frame) containing the variables in the model.
-#' @param method The optimisation method to use (see `optim`).
-#' @param control Passed onto `optim`.
+#' @param init Initial parameter values. If it is `NULL`, 0 is used for all
+#'   values.
+#' @param ... Arguments passed onto `optim`.
 #'
 #' @return A list with component `par` containing the best set of parameters
 #'   found. See `optim` for details.
@@ -92,19 +94,35 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1) {
 #'                       agoal ~ off(away) + def(home) + 0,
 #'                       weights = ~1,  # All games weighted equally
 #'                       data = premier_league_2010)
-dixoncoles_ext <- function(f1, f2, weights, data, method = "BFGS", control = list()) {
+dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
+  # Handle args to pass onto optim including defaults
+  dots <- list(...)
+
+  if (!("method" %in% names(dots))) {
+    dots["method"] <- "BFGS"
+  }
+
+  # Wrangle data and intial params
   modeldata <- .dc_modeldata(f1, f2, weights, data)
 
-  params <- rep_len(0, length(modeldata$vars) + 1)
-  names(params) <- c(modeldata$vars, "rho")
+  if (is.null(init)) {
+    params <- rep_len(0, length(modeldata$vars) + 1)
+    names(params) <- c(modeldata$vars, "rho")
+  } else {
+    params <- init
+  }
 
-  res <- optim(
-    params,
-    .dc_objective_function,
-    modeldata = modeldata,
-    method    = method,
-    control   = control
+  # Create arguments to optim
+  # We need to do this + do.call so that we can pass on ... with default args
+  # Maybe there's a better way? (in rlib?)
+  args <- c(
+    list(par       = params,
+         fn        = .dc_objective_function,
+         modeldata = modeldata),
+    dots
   )
+
+  res <- do.call(optim, args)
 
   res$f1 <- f1
   res$f2 <- f2
