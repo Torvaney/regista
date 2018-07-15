@@ -31,7 +31,8 @@
 #' @importFrom rlang quo_text
 #' @export
 #' @examples
-#' fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+#' fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away,
+#'                   data = premier_league_2010)
 #'
 dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1, ...) {
 
@@ -179,10 +180,10 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 
   # Create model matrix for newdata
   modeldata <- .dc_modeldata(
-    object$f1,
-    object$f2,
-    object$weights,
-    newdata
+    f1      = object$f1,
+    f2      = object$f2,
+    weights = ~1,        # Weighting doesn't affect predictions
+    data    = newdata
   )
 
   # Matrix multiplication to get Poisson means
