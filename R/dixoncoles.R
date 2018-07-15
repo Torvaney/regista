@@ -114,7 +114,7 @@ dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
 
   # Create arguments to optim
   # We need to do this + do.call so that we can pass on ... with default args
-  # Maybe there's a better way? (in rlib?)
+  # Maybe there's a better way using rlang::list2?
   args <- c(
     list(par       = params,
          fn        = .dc_objective_function,
