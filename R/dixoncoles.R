@@ -354,7 +354,7 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 
 #' Quote terms of a formula
 #' @keywords internal
-#' @importFrom rlang parse_quo caller_env
+#' @importFrom rlang parse_expr caller_env
 #' @importFrom purrr %>% map
 #' @importFrom stats terms
 .quo_terms <- function(f) {
@@ -366,7 +366,7 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 
   t %>%
     attr("term.labels") %>%
-    map(parse_quo, env = caller_env())
+    map(parse_expr)
 }
 
 #' Get a matrix of dummy variables from a factor

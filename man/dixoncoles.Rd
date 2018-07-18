@@ -41,6 +41,7 @@ Statistical Society: Series C (Applied Statistics) 46, no. 2 (1997):
 265-280.
 }
 \examples{
-fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away,
+                  data = premier_league_2010)
 
 }
