@@ -3,6 +3,8 @@
 S3method(predict,dixoncoles)
 S3method(print,dixoncoles)
 export(def)
+export(discount_exponential)
+export(discount_lte)
 export(dixoncoles)
 export(dixoncoles_ext)
 export(factor_teams)
