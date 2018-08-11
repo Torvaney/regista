@@ -95,7 +95,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1, ...) {
 #'                       agoal ~ off(away) + def(home) + 0,
 #'                       weights = ~1,  # All games weighted equally
 #'                       data = premier_league_2010)
-dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
+dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, constraints = list(), ...) {
   # Handle args to pass onto optim including defaults
   dots <- list(...)
 
@@ -113,12 +113,17 @@ dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
     params <- init
   }
 
+  objective_function <- .add_penalties(
+    .dc_objective_function,
+    constraints
+  )
+
   # Create arguments to optim
-  # We need to do this + do.call so that we can pass on ... with default args
+  # We need to do this + do.call so that we can pass on `...` with default args
   # Maybe there's a better way using rlang::list2?
   args <- c(
     list(par       = params,
-         fn        = .dc_objective_function,
+         fn        = objective_function,
          modeldata = modeldata),
     dots
   )
@@ -250,6 +255,34 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 }
 
 # Auxiliary fitting functions --------------------------------------------------
+
+#' Create penalty functions from contraints
+#' @importFrom purrr %>% as_mapper
+#' @importFrom rlang f_lhs f_rhs new_function
+#' @keywords internal
+.create_penalty <- function(constraint) {
+  # e.g.
+  # constraint <- sum(offs(.)) ~ equals_zero()
+  # constrain rho somehow??
+
+  constrant_fun <-
+    f_lhs(constraint) %>%
+    new_formula(NULL, .) %>%
+    as_mapper()
+
+  feasibility_fun <- f_eval(constraint)
+
+  function(params) {
+    constraint_val <- constraint_fun(params)
+    feasibility_fun(constraint_val)
+  }
+}
+
+#' Add penalties to an objective function
+#' @keywords internal
+.add_penalties <- function(f, constraints) {
+
+}
 
 #' Get model data for a Dixon-Coles model
 #' @keywords internal
