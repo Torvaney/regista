@@ -292,10 +292,6 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 #' Function controlling dependence between home and away goals
 #' @keywords internal
 .tau <- function(hg, ag, home_rates, away_rates, rho) {
-  if (!all.equal(length(hg), length(ag),
-                 length(home_rates), length(away_rates))) {
-    stop("Supplied vectors must all have the same length")
-  }
 
   # Initialise values to 1
   vals <- rep_len(1, length.out = length(hg))
