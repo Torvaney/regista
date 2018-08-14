@@ -28,7 +28,7 @@
 #'   found. See `optim` for details.
 #'
 #' @importFrom lazyeval f_eval f_interp f_new uq
-#' @importFrom rlang enquo eval_tidy f_rhs is_formula quo_text
+#' @importFrom rlang !! enquo eval_tidy f_rhs is_formula quo_text
 #' @export
 #' @examples
 #' fit <- dixoncoles(hgoal, agoal, home, away,
@@ -60,7 +60,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = 1, ...) {
 
   data$hfa <- TRUE
 
-  res <- dixoncoles_ext(f1, f2, weights = weights, data = data, ...)
+  res <- dixoncoles_ext(f1, f2, weights = !!enquo(weights), data = data, ...)
 
   # Hack to let predict.dixoncoles know to add HFA
   res$implicit_hfa <- TRUE

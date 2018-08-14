@@ -169,24 +169,46 @@ test_that("Weighting games works", {
   # Give games where the home team wins a higher weight and compare HFA
   # TODO: Come up with better + more granular tests for this feature
   seed <- 2018-06-17
-  set.seed(seed)
-  equal_weight <- suppressWarnings(
-    dixoncoles_ext(
+  suppressWarnings({
+    set.seed(seed)
+    equal_weight <- dixoncoles(
+      hgoal   = hgoal,
+      agoal   = agoal,
+      hteam   = home,
+      ateam   = away,
+      weights = 1,
+      data    = premier_league_2010
+    )
+
+    set.seed(seed)
+    high_hfa <- dixoncoles(
+      hgoal   = hgoal,
+      agoal   = agoal,
+      hteam   = home,
+      ateam   = away,
+      weights = ifelse(hgoal > agoal, 1, 0.5),
+      data    = premier_league_2010
+    )
+  })
+  expect_gt(high_hfa$par[["hfa"]], equal_weight$par[["hfa"]])
+
+  suppressWarnings({
+    set.seed(seed)
+    equal_weight <- dixoncoles_ext(
       f1      = hgoal ~ off(home) + def(away) + hfa + 0,
       f2      = agoal ~ off(away) + def(home) + 0,
       weights = 1,
       data    = premier_league_2010
     )
-  )
-  set.seed(seed)
-  high_hfa <- suppressWarnings(
-    dixoncoles_ext(
+
+    set.seed(seed)
+    high_hfa <- dixoncoles_ext(
       f1      = hgoal ~ off(home) + def(away) + hfa + 0,
       f2      = agoal ~ off(away) + def(home) + 0,
       weights = ifelse(hgoal > agoal, 1, 0.5),
-      data    = premier_league_2010)
-  )
-
+      data    = premier_league_2010
+    )
+  })
   expect_gt(high_hfa$par[["hfa"]], equal_weight$par[["hfa"]])
 })
 
