@@ -116,7 +116,7 @@ test_that("Rates are calculated correctly", {
 # Handled by an error/warning for now
 # test_that("Simple Dixon-Coles can handle character teams", {
 #   suppressWarnings({
-#     fit_fct <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+#     fit_fct <- dixoncoles(hgoal, agoal, home, away, premier_league_2010)
 #
 #     premier_league_2010$home <- as.character(premier_league_2010$home)
 #     premier_league_2010$away <- as.character(premier_league_2010$away)
@@ -130,7 +130,7 @@ test_that("Both Dixon-Coles function return the same estimates", {
   seed <- 2018-06-03
   set.seed(seed)
   fit_simple <- suppressWarnings(
-    dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
+    dixoncoles(hgoal, agoal, home, away, premier_league_2010)
   )
   pars_simple <- sort(fit_simple$par)
 
@@ -138,7 +138,7 @@ test_that("Both Dixon-Coles function return the same estimates", {
   fit_ext <- suppressWarnings(
     dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
                    f2 = agoal ~ off(away) + def(home) + 0,
-                   weights = ~ 1,
+                   weights = 1,
                    data = premier_league_2010)
   )
   pars_ext <- sort(fit_ext$par)
@@ -154,10 +154,7 @@ test_that("Home advantage estimates are reasonable", {
     # Supress warnings related to poorly specified bounds (see #1)
     fit <- suppressWarnings(
       dixoncoles(
-        ~hgoal,
-        ~agoal,
-        ~home,
-        ~away,
+        hgoal, agoal, home, away,
         as.data.frame(resampled_data)
       )
     )
@@ -172,31 +169,58 @@ test_that("Weighting games works", {
   # Give games where the home team wins a higher weight and compare HFA
   # TODO: Come up with better + more granular tests for this feature
   seed <- 2018-06-17
-  set.seed(seed)
-  equal_weight <- suppressWarnings(
-    dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
-                   f2 = agoal ~ off(away) + def(home) + 0,
-                   weights = ~ 1,
-                   data = premier_league_2010)
-  )
-  set.seed(seed)
-  high_hfa <- suppressWarnings(
-    dixoncoles_ext(f1 = hgoal ~ off(home) + def(away) + hfa + 0,
-                   f2 = agoal ~ off(away) + def(home) + 0,
-                   weights = ~ ifelse(hgoal > agoal, 1, 0.5),
-                   data = premier_league_2010)
-  )
+  suppressWarnings({
+    set.seed(seed)
+    equal_weight <- dixoncoles(
+      hgoal   = hgoal,
+      agoal   = agoal,
+      hteam   = home,
+      ateam   = away,
+      weights = 1,
+      data    = premier_league_2010
+    )
 
+    set.seed(seed)
+    high_hfa <- dixoncoles(
+      hgoal   = hgoal,
+      agoal   = agoal,
+      hteam   = home,
+      ateam   = away,
+      weights = ifelse(hgoal > agoal, 1, 0.5),
+      data    = premier_league_2010
+    )
+  })
+  expect_gt(high_hfa$par[["hfa"]], equal_weight$par[["hfa"]])
+
+  suppressWarnings({
+    set.seed(seed)
+    equal_weight <- dixoncoles_ext(
+      f1      = hgoal ~ off(home) + def(away) + hfa + 0,
+      f2      = agoal ~ off(away) + def(home) + 0,
+      weights = 1,
+      data    = premier_league_2010
+    )
+
+    set.seed(seed)
+    high_hfa <- dixoncoles_ext(
+      f1      = hgoal ~ off(home) + def(away) + hfa + 0,
+      f2      = agoal ~ off(away) + def(home) + 0,
+      weights = ifelse(hgoal > agoal, 1, 0.5),
+      data    = premier_league_2010
+    )
+  })
   expect_gt(high_hfa$par[["hfa"]], equal_weight$par[["hfa"]])
 })
 
 test_that("Games can be predicted", {
   suppressWarnings({
-    fit_simple <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
-    fit_ext <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
-                              agoal ~ off(away) + def(home) + 0,
-                              weights = ~1,
-                              data = premier_league_2010)
+    fit_simple <- dixoncoles(hgoal, agoal, home, away, premier_league_2010)
+    fit_ext <- dixoncoles_ext(
+      f1      = hgoal ~ off(home) + def(away) + hfa + 0,
+      f2      = agoal ~ off(away) + def(home) + 0,
+      weights = 1,
+      data    = premier_league_2010
+    )
   })
 
   rates_simple <- predict(fit_simple, premier_league_2010, type = "rates")

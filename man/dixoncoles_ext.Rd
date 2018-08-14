@@ -41,6 +41,6 @@ estimate the effect of parameters beyond team strength.
 \examples{
 fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
                       agoal ~ off(away) + def(home) + 0,
-                      weights = ~1,  # All games weighted equally
+                      weights = 1,  # All games weighted equally
                       data = premier_league_2010)
 }

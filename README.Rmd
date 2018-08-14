@@ -28,7 +28,44 @@ devtools::install_github("torvaney/regista")
 
 ## Examples
 
-There is currently a couple of short examples available here:
+### Dixon-Coles
 
- * http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/
- * http://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/
+The ["Dixon-Coles model"](http://web.math.ku.dk/~rolf/teaching/thesis/DixonColes.pdf) is a modified poisson model, specifically designed for estimating teams' strengths and for predicting football matches. 
+
+Regista provides an implementation of this model:
+
+```{r, message = FALSE}
+library(regista)
+
+fit <- dixoncoles(hgoal, agoal, home, away, data = premier_league_2010)
+
+print(fit)
+```
+
+The Dixon-Coles model provides estimates of each team's offensive and defensive strength, along with
+an estimate of home-field advantage (`hfa`):
+
+```{r}
+parameters <- data.frame(parameter = names(fit$par),
+                         value     = fit$par,
+                         row.names = NULL)
+
+head(parameters)
+```
+
+Regista also comes with a `predict` method to predict method, to either predict the goalscoring rate of either team, or the probabilities of different possible scorelines:
+
+```{r}
+cbind(
+  premier_league_2010,
+  predict(fit, premier_league_2010, type = "rates")
+)
+```
+
+A more flexible api is provided with `dixoncoles_ext`, which allows the base Dixon-Coles model to be extended arbitrarily.
+
+There are some more extensive examples and analyses using regista available at the following links:
+
+ * [Modelling the World Cup with regista](http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/)
+ * [Dixon Coles and xG: together at last](http://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/)
+ * [What a diff'rence xG makes](http://www.statsandsnakeoil.com/2018/07/15/what-a-diff-rence-xg-makes/)

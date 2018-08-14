@@ -4,7 +4,7 @@
 \alias{dixoncoles}
 \title{Dixon-Coles model for estimating team strengths}
 \usage{
-dixoncoles(hgoal, agoal, hteam, ateam, data, weights = ~1, ...)
+dixoncoles(hgoal, agoal, hteam, ateam, data, weights = 1, ...)
 }
 \arguments{
 \item{hgoal}{A formula describing the home goals column in `data`, or a
@@ -41,7 +41,7 @@ Statistical Society: Series C (Applied Statistics) 46, no. 2 (1997):
 265-280.
 }
 \examples{
-fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away,
+fit <- dixoncoles(hgoal, agoal, home, away,
                   data = premier_league_2010)
 
 }

@@ -28,17 +28,25 @@
 #'   found. See `optim` for details.
 #'
 #' @importFrom lazyeval f_eval f_interp f_new uq
-#' @importFrom rlang quo_text
+#' @importFrom rlang !! enquo eval_tidy f_rhs is_formula quo_text
 #' @export
 #' @examples
-#' fit <- dixoncoles(~hgoal, ~agoal, ~home, ~away,
+#' fit <- dixoncoles(hgoal, agoal, home, away,
 #'                   data = premier_league_2010)
 #'
-dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1, ...) {
+dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = 1, ...) {
+  # Capture arguments with enquo
+  # If a formula is supplied, extract the rhs in order to keep backwards
+  # compatibility (the old api used formulas)
+  hgoal <- enquo(hgoal)
+  agoal <- enquo(agoal)
+  hteam <- enquo(hteam)
+  ateam <- enquo(ateam)
 
   # Check input
-  hvar <- f_eval(hteam, data)
-  avar <- f_eval(ateam, data)
+  hvar <- eval_tidy(hteam, data)
+  avar <- eval_tidy(ateam, data)
+
   if (!(is.factor(hvar) & is.factor(avar))) {
     stop("home and away team variables should be factors (see factor_teams)")
   }
@@ -48,11 +56,11 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1, ...) {
 
   # Fit the model
   f1 <- f_new(uq(f_interp(~ off(uq(hteam)) + def(uq(ateam)) + hfa + 0)), uq(hgoal))
-  f2 <- f_new(uq(f_interp(~ off(uq(ateam)) + def(uq(hteam)) + 0)), uq(agoal))
+  f2 <- f_new(uq(f_interp(~ off(uq(ateam)) + def(uq(hteam)) + 0)),       uq(agoal))
 
   data$hfa <- TRUE
 
-  res <- dixoncoles_ext(f1, f2, weights = weights, data = data, ...)
+  res <- dixoncoles_ext(f1, f2, weights = !!enquo(weights), data = data, ...)
 
   # Hack to let predict.dixoncoles know to add HFA
   res$implicit_hfa <- TRUE
@@ -89,13 +97,16 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = ~1, ...) {
 #'   found. See `optim` for details.
 #'
 #' @importFrom stats optim
+#' @importFrom rlang !! enquo
 #' @export
 #' @examples
 #' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
 #'                       agoal ~ off(away) + def(home) + 0,
-#'                       weights = ~1,  # All games weighted equally
+#'                       weights = 1,  # All games weighted equally
 #'                       data = premier_league_2010)
 dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
+  weights <- enquo(weights)
+
   # Handle args to pass onto optim including defaults
   dots <- list(...)
 
@@ -141,9 +152,9 @@ dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
 print.dixoncoles <- function(x, ...) {
   msg <- glue("Dixon-Coles model with specification:
 
-               Home goals: {deparse(x$f1)}
-               Away goals: {deparse(x$f2)}
-               Weights   : {deparse(x$weights)}")
+               Home goals: {rlang::quo_text(x$f1)}
+               Away goals: {rlang::quo_text(x$f2)}
+               Weights   : {rlang::quo_text(x$weights)}")
 
   cat("\n")
   cat(msg)
@@ -182,7 +193,7 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
   modeldata <- .dc_modeldata(
     f1      = object$f1,
     f2      = object$f2,
-    weights = ~1,        # Weighting doesn't affect predictions
+    weights = rlang::quo(1),        # Weighting doesn't affect predictions
     data    = newdata
   )
 
@@ -254,7 +265,7 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 #' Get model data for a Dixon-Coles model
 #' @keywords internal
 #' @importFrom purrr %>% map reduce flatten_chr
-#' @importFrom lazyeval f_eval_lhs
+#' @importFrom rlang enquo eval_tidy f_lhs f_rhs
 .dc_modeldata <- function(f1, f2, weights, data) {
   terms1 <- .quo_terms(f1)
   terms2 <- .quo_terms(f2)
@@ -281,11 +292,11 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 
   list(
     vars    = column_names,
-    y1      = f_eval_lhs(f1, data),
-    y2      = f_eval_lhs(f2, data),
+    y1      = eval_tidy(f_lhs(f1), data),
+    y2      = eval_tidy(f_lhs(f2), data),
     mat1    = mat1,
     mat2    = mat2,
-    weights = f_eval(weights, data)
+    weights = eval_tidy(weights, data)
   )
 }
 
