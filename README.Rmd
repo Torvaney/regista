@@ -34,7 +34,7 @@ The ["Dixon-Coles model"](http://web.math.ku.dk/~rolf/teaching/thesis/DixonColes
 
 Regista provides an implementation of this model:
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(regista)
 
 fit <- dixoncoles(hgoal, agoal, home, away, data = premier_league_2010)
@@ -56,10 +56,12 @@ head(parameters)
 Regista also comes with a `predict` method to predict method, to either predict the goalscoring rate of either team, or the probabilities of different possible scorelines:
 
 ```{r}
-cbind(
+with_predictions <- cbind(
   premier_league_2010,
   predict(fit, premier_league_2010, type = "rates")
 )
+
+head(with_predictions[, c("date", "home", "away", "home_rate", "away_rate")])
 ```
 
 A more flexible api is provided with `dixoncoles_ext`, which allows the base Dixon-Coles model to be extended arbitrarily.
