@@ -12,6 +12,7 @@ output:
 [![Build Status](https://travis-ci.org/Torvaney/regista.svg?branch=master)](https://travis-ci.org/Torvaney/regista)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Torvaney/regista?branch=master&svg=true)](https://ci.appveyor.com/project/Torvaney/regista)
 [![Coverage status](https://codecov.io/gh/Torvaney/regista/branch/master/graph/badge.svg)](https://codecov.io/github/Torvaney/regista?branch=master)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 ## Overview
 
