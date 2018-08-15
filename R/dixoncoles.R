@@ -28,7 +28,7 @@
 #'   found. See `optim` for details.
 #'
 #' @importFrom lazyeval f_eval f_interp f_new uq
-#' @importFrom rlang !! enquo eval_tidy f_rhs is_formula quo_text
+#' @importFrom rlang !! enquo eval_tidy f_rhs
 #' @export
 #' @examples
 #' fit <- dixoncoles(hgoal, agoal, home, away,
@@ -36,8 +36,6 @@
 #'
 dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = 1, ...) {
   # Capture arguments with enquo
-  # If a formula is supplied, extract the rhs in order to keep backwards
-  # compatibility (the old api used formulas)
   hgoal <- enquo(hgoal)
   agoal <- enquo(agoal)
   hteam <- enquo(hteam)
@@ -97,7 +95,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = 1, ...) {
 #'   found. See `optim` for details.
 #'
 #' @importFrom stats optim
-#' @importFrom rlang !! enquo
+#' @importFrom rlang enquo
 #' @export
 #' @examples
 #' fit <- dixoncoles_ext(hgoal ~ off(home) + def(away) + hfa + 0,
