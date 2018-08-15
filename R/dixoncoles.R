@@ -182,6 +182,7 @@ print.dixoncoles <- function(x, ...) {
 #' @export
 predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
                                up_to = 50, threshold = 1e-8, ...) {
+  type <- match.arg(type, c("rates", "scorelines"))
 
   if (object$implicit_hfa == TRUE) {
     newdata$hfa <- TRUE
@@ -198,18 +199,13 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
   # Matrix multiplication to get Poisson means
   rate_info <- .dc_rate_info(object$par, modeldata)
 
-  # Return only the rates if "response" is chosen
-  rates <- data.frame(home_rate = c(rate_info$home),
-                      away_rate = c(rate_info$away))
-  if (type == "rates") {
-    return(rates)
-  }
-
   if (type == "scorelines") {
     return(.dc_predict_scorelines(rate_info, up_to, threshold))
   }
 
-  warning("Unknown response type. Defaulting to type = \"rates\"")
+  # Return rates if type == "rates" (default)
+  rates <- data.frame(home_rate = c(rate_info$home),
+                      away_rate = c(rate_info$away))
   rates
 }
 
