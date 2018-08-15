@@ -50,17 +50,17 @@ def <- function(x) {
 #' @param agoal The column containing away goals
 #' @param prob The column containing the probability of that given scoreline
 #'
-#' @importFrom rlang eval_tidy quo
+#' @importFrom rlang enquo eval_tidy
 #' @importFrom purrr map_dbl
 #' @importFrom glue glue
 #'
 #' @export
 scorelines_to_outcomes <- function(scorelines,
-                                   hgoal = quo(hgoal),
-                                   agoal = quo(agoal),
-                                   prob  = quo(prob)) {
-  hgoals <- eval_tidy(hgoal, scorelines)
-  agoals <- eval_tidy(agoal, scorelines)
+                                   hgoal = hgoal,
+                                   agoal = agoal,
+                                   prob  = prob) {
+  hgoals <- eval_tidy(enquo(hgoal), scorelines)
+  agoals <- eval_tidy(enquo(agoal), scorelines)
 
   # Determine the result for each scoreline
   scorelines$outcome <- NA_character_
@@ -69,7 +69,7 @@ scorelines_to_outcomes <- function(scorelines,
   scorelines$outcome <- ifelse(agoals == hgoals, "draw", scorelines$outcome)
 
   sum_probs <- function(outcome) {
-    sum(eval_tidy(prob, scorelines[scorelines$outcome == outcome, ]))
+    sum(eval_tidy(enquo(prob), scorelines[scorelines$outcome == outcome, ]))
   }
 
   # NOTE: Should outcomes be a factor?
