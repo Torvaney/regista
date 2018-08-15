@@ -81,7 +81,7 @@ scorelines_to_outcomes <- function(scorelines,
     prob    = map_dbl(outcomes, sum_probs)
   )
 
-  if (sum(outcome_probs$prob) != 1) {
+  if (!all.equal(sum(outcome_probs$prob), 1)) {
     warning(glue("Outcome probabilites expected to sum to 1. Provided values ",
                  "sum to {sum(outcome_probs$prob)}."))
   }
