@@ -22,4 +22,6 @@ Suggests:
   covr,
   rsample,
   tibble
+Remotes:
+  tidymodels/rsample
 RoxygenNote: 6.0.1
