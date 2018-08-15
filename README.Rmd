@@ -48,11 +48,12 @@ The Dixon-Coles model provides estimates of each team's offensive and defensive 
 an estimate of home-field advantage (`hfa`):
 
 ```{r}
-parameters <- data.frame(parameter = names(fit$par),
-                         value     = fit$par,
-                         row.names = NULL)
+parameters <- tibble::tibble(
+  parameter = names(fit$par),
+  value     = fit$par
+)
 
-head(parameters)
+parameters
 ```
 
 Regista also comes with a `predict` method to predict method, to either predict the goalscoring rate of either team, or the probabilities of different possible scorelines:
@@ -63,7 +64,7 @@ with_predictions <- cbind(
   predict(fit, premier_league_2010, type = "rates")
 )
 
-head(with_predictions[, c("date", "home", "away", "home_rate", "away_rate")])
+tibble::as_tibble(with_predictions[, c("date", "home", "away", "home_rate", "away_rate")])
 ```
 
 A more flexible api is provided with `dixoncoles_ext`, which allows the base Dixon-Coles model to be extended arbitrarily.

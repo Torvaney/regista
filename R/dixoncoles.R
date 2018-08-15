@@ -204,8 +204,8 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
   }
 
   # Return rates if type == "rates" (default)
-  rates <- data.frame(home_rate = c(rate_info$home),
-                      away_rate = c(rate_info$away))
+  rates <- tibble::tibble(home_rate = c(rate_info$home),
+                          away_rate = c(rate_info$away))
   rates
 }
 
@@ -251,7 +251,7 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
   # Filter out the ~0% (< threshold) rows
   scorelines <- scorelines[scorelines$prob > threshold, ]
 
-  scorelines
+  tibble::as_tibble(scorelines)
 }
 
 # Auxiliary fitting functions --------------------------------------------------

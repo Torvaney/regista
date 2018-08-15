@@ -49,20 +49,28 @@ print(fit)
 The Dixon-Coles model provides estimates of each team's offensive and defensive strength, along with an estimate of home-field advantage (`hfa`):
 
 ``` r
-parameters <- data.frame(parameter = names(fit$par),
-                         value     = fit$par,
-                         row.names = NULL)
+parameters <- tibble::tibble(
+  parameter = names(fit$par),
+  value     = fit$par
+)
 
-head(parameters)
+parameters
 ```
 
-    ##                parameter       value
-    ## 1          off___Arsenal  0.36878555
-    ## 2      off___Aston Villa -0.02954271
-    ## 3  off___Birmingham City -0.27263737
-    ## 4 off___Blackburn Rovers -0.06083794
-    ## 5        off___Blackpool  0.14190619
-    ## 6 off___Bolton Wanderers  0.04201302
+    ## # A tibble: 42 x 2
+    ##    parameter                 value
+    ##    <chr>                     <dbl>
+    ##  1 off___Arsenal           0.369  
+    ##  2 off___Aston Villa      -0.0295 
+    ##  3 off___Birmingham City  -0.273  
+    ##  4 off___Blackburn Rovers -0.0608 
+    ##  5 off___Blackpool         0.142  
+    ##  6 off___Bolton Wanderers  0.0420 
+    ##  7 off___Chelsea           0.304  
+    ##  8 off___Everton           0.0118 
+    ##  9 off___Fulham           -0.00836
+    ## 10 off___Liverpool         0.162  
+    ## # ... with 32 more rows
 
 Regista also comes with a `predict` method to predict method, to either predict the goalscoring rate of either team, or the probabilities of different possible scorelines:
 
@@ -72,16 +80,23 @@ with_predictions <- cbind(
   predict(fit, premier_league_2010, type = "rates")
 )
 
-head(with_predictions[, c("date", "home", "away", "home_rate", "away_rate")])
+tibble::as_tibble(with_predictions[, c("date", "home", "away", "home_rate", "away_rate")])
 ```
 
-    ##         date    home             away home_rate away_rate
-    ## 1 2011-05-15 Arsenal      Aston Villa  2.397793 0.8728759
-    ## 2 2010-10-16 Arsenal  Birmingham City  2.350139 0.6845069
-    ## 3 2011-04-02 Arsenal Blackburn Rovers  2.423137 0.8459820
-    ## 4 2010-08-21 Arsenal        Blackpool  3.232843 1.0361241
-    ## 5 2010-09-11 Arsenal Bolton Wanderers  2.304119 0.9376241
-    ## 6 2010-12-27 Arsenal          Chelsea  1.378129 1.2185764
+    ## # A tibble: 380 x 5
+    ##    date       home    away             home_rate away_rate
+    ##    <chr>      <fct>   <fct>                <dbl>     <dbl>
+    ##  1 2011-05-15 Arsenal Aston Villa           2.40     0.873
+    ##  2 2010-10-16 Arsenal Birmingham City       2.35     0.685
+    ##  3 2011-04-02 Arsenal Blackburn Rovers      2.42     0.846
+    ##  4 2010-08-21 Arsenal Blackpool             3.23     1.04 
+    ##  5 2010-09-11 Arsenal Bolton Wanderers      2.30     0.938
+    ##  6 2010-12-27 Arsenal Chelsea               1.38     1.22 
+    ##  7 2011-02-01 Arsenal Everton               1.85     0.910
+    ##  8 2010-12-04 Arsenal Fulham                1.79     0.892
+    ##  9 2011-04-17 Arsenal Liverpool             1.80     1.06 
+    ## 10 2011-01-05 Arsenal Manchester City       1.36     1.07 
+    ## # ... with 370 more rows
 
 A more flexible api is provided with `dixoncoles_ext`, which allows the base Dixon-Coles model to be extended arbitrarily.
 

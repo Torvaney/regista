@@ -16,10 +16,10 @@ Imports:
   glue,
   lazyeval,
   purrr,
-  rlang
+  rlang,
+  tibble
 Suggests: 
   testthat,
   covr,
-  modelr,
-  tibble
+  modelr
 RoxygenNote: 6.0.1
