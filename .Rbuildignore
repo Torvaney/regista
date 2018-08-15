@@ -7,3 +7,4 @@
 ^TODO.md
 ^\.travis\.yml$
 ^codecov\.yml$
+^appveyor\.yml$
