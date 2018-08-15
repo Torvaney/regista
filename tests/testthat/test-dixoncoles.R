@@ -147,16 +147,15 @@ test_that("Both Dixon-Coles function return the same estimates", {
 })
 
 test_that("Home advantage estimates are reasonable", {
-  skip_if_not_installed("rsample")
+  skip_if_not_installed("modelr")
   set.seed(2018)
-  resampled_data <- rsample::bootstraps(premier_league_2010, times = 5)
-
-  lapply(resampled_data$splits, function(data) {
+  lapply(1:5, function(data) {
+    resampled_data <- modelr::resample_bootstrap(premier_league_2010)
     # Supress warnings related to poorly specified bounds (see #1)
     fit <- suppressWarnings(
       dixoncoles(
         hgoal, agoal, home, away,
-        as.data.frame(data)
+        as.data.frame(resampled_data)
       )
     )
 

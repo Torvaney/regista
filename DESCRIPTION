@@ -20,8 +20,6 @@ Imports:
 Suggests: 
   testthat,
   covr,
-  rsample,
+  modelr,
   tibble
-Remotes:
-  tidymodels/rsample
 RoxygenNote: 6.0.1
