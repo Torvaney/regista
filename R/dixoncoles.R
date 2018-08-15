@@ -180,9 +180,10 @@ print.dixoncoles <- function(x, ...) {
 #' of scorelines and their estimated probabilities.
 #'
 #' @export
-predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
-                               up_to = 50, threshold = 1e-8, ...) {
-  type <- match.arg(type, c("rates", "scorelines"))
+predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", "outcomes"),
+                               up_to = 50, threshold = sqrt(.Machine$double.eps),
+                               ...) {
+  type <- match.arg(type, c("rates", "scorelines", "outcomes"))
 
   if (object$implicit_hfa == TRUE) {
     newdata$hfa <- TRUE
@@ -201,6 +202,12 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines"),
 
   if (type == "scorelines") {
     return(.dc_predict_scorelines(rate_info, up_to, threshold))
+  }
+
+  if (type == "outcomes") {
+    scorelines <- .dc_predict_scorelines(rate_info, up_to, threshold)
+    outcomes <- purrr::map(scorelines, scorelines_to_outcomes)
+    return(outcomes)
   }
 
   # Return rates if type == "rates" (default)
