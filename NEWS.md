@@ -1,6 +1,9 @@
 # regista 0.3.0.9000 (In progress)
 
  * Change `dixoncoles` API to use unquoted variable names.
+* Allow outcome probabilities to be predicted directly
+ * Return tibbles over data.frames where appropriate
+
 
 # regista 0.2.0 and below
 
