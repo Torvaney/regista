@@ -1,7 +1,7 @@
 Package: regista
 Type: Package
 Title: Soccer Analytics
-Version: 0.3.0.9000
+Version: 0.3.1.9000
 Authors@R: person("Ben", "Torvaney", email = "torvaney@protonmail.com", role = c("aut", "cre"))
 Description: A collection of models and tools for soccer analytics.
 URL: https://github.com/Torvaney/regista
@@ -22,4 +22,4 @@ Suggests:
   testthat,
   covr,
   modelr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

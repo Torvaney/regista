@@ -1,9 +1,12 @@
-# regista 0.3.0.9000 (In progress)
+# regista 0.3.1.9000 (In progress)
+
+ * Allow dixoncoles predictions on data without home/away goal columns
+
+# regista 0.3.0
 
  * Change `dixoncoles` API to use unquoted variable names.
-* Allow outcome probabilities to be predicted directly
+ * Allow outcome probabilities to be predicted directly
  * Return tibbles over data.frames where appropriate
-
 
 # regista 0.2.0 and below
 

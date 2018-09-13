@@ -4,8 +4,9 @@
 \alias{predict.dixoncoles}
 \title{Predict method for Dixon-Coles model fits}
 \usage{
-\method{predict}{dixoncoles}(object, newdata, type = c("rates", "scorelines",
-  "outcomes"), up_to = 50, threshold = sqrt(.Machine$double.eps), ...)
+\method{predict}{dixoncoles}(object, newdata, type = c("rates",
+  "scorelines", "outcomes"), up_to = 50,
+  threshold = sqrt(.Machine$double.eps), ...)
 }
 \arguments{
 \item{object}{Object of class inheriting from `dixoncoles`.}

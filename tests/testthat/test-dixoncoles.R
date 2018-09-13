@@ -223,20 +223,22 @@ test_that("Games can be predicted", {
     )
   })
 
-  rates_simple <- predict(fit_simple, premier_league_2010, type = "rates")
-  rates_ext <- predict(fit_ext, premier_league_2010, type = "rates")
+  games_to_predict <- premier_league_2010[, c("home", "away", "hfa")]
+
+  rates_simple <- predict(fit_simple, games_to_predict, type = "rates")
+  rates_ext <- predict(fit_ext, games_to_predict, type = "rates")
   expect_equal(rates_simple, rates_ext)
 
-  scorelines_simple <- predict(fit_simple, premier_league_2010, type = "scorelines")
-  scorelines_ext <- predict(fit_ext, premier_league_2010, type = "scorelines")
+  scorelines_simple <- predict(fit_simple, games_to_predict, type = "scorelines")
+  scorelines_ext <- predict(fit_ext, games_to_predict, type = "scorelines")
   expect_equal(scorelines_simple, scorelines_ext)
 
-  outcomes_simple <- predict(fit_simple, premier_league_2010, type = "outcomes")
-  outcomes_ext <- predict(fit_ext, premier_league_2010, type = "outcomes")
+  outcomes_simple <- predict(fit_simple, games_to_predict, type = "outcomes")
+  outcomes_ext <- predict(fit_ext, games_to_predict, type = "outcomes")
   expect_equal(outcomes_simple, outcomes_ext)
 
   # A single game can also be predicted
-  first_game <- head(premier_league_2010, 1)
+  first_game <- head(games_to_predict, 1)
   rates_simple <- predict(fit_simple, first_game, type = "rates")
   rates_ext <- predict(fit_ext, first_game, type = "rates")
   expect_equal(rates_simple, rates_ext)

@@ -194,7 +194,8 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", 
     f1      = object$f1,
     f2      = object$f2,
     weights = rlang::quo(1),        # Weighting doesn't affect predictions
-    data    = newdata
+    data    = newdata,
+    predict = TRUE
   )
 
   # Matrix multiplication to get Poisson means
@@ -267,7 +268,7 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", 
 #' @keywords internal
 #' @importFrom purrr %>% map reduce flatten_chr
 #' @importFrom rlang enquo eval_tidy f_lhs f_rhs
-.dc_modeldata <- function(f1, f2, weights, data) {
+.dc_modeldata <- function(f1, f2, weights, data, predict = FALSE) {
   terms1 <- .quo_terms(f1)
   terms2 <- .quo_terms(f2)
 
@@ -291,14 +292,20 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", 
   mat1 <- matrix(mat1[, column_names], nrow = nrow(mat1))
   mat2 <- matrix(mat2[, column_names], nrow = nrow(mat2))
 
-  list(
+  modeldata <- list(
     vars    = column_names,
-    y1      = eval_tidy(f_lhs(f1), data),
-    y2      = eval_tidy(f_lhs(f2), data),
     mat1    = mat1,
     mat2    = mat2,
     weights = eval_tidy(weights, data)
   )
+
+  # Only add home/away goals if necessary
+  if (predict == FALSE) {
+    modeldata$y1 <- eval_tidy(f_lhs(f1), data)
+    modeldata$y2 <- eval_tidy(f_lhs(f2), data)
+  }
+
+  modeldata
 }
 
 #' Function controlling dependence between home and away goals
