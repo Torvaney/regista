@@ -17,7 +17,7 @@ output:
 ## Overview
 
 regista is a package for performing some of the common modelling tasks in soccer
-analytics. Currently a *work in progress*.
+analytics.
 
 ## Installation
 

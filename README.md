@@ -2,32 +2,41 @@ README
 ================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-regista
-=======
 
-[![Build Status](https://travis-ci.org/Torvaney/regista.svg?branch=master)](https://travis-ci.org/Torvaney/regista) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/Torvaney/regista?branch=master&svg=true)](https://ci.appveyor.com/project/Torvaney/regista) [![Coverage status](https://codecov.io/gh/Torvaney/regista/branch/master/graph/badge.svg)](https://codecov.io/github/Torvaney/regista?branch=master) [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+# regista
 
-Overview
---------
+[![Build
+Status](https://travis-ci.org/Torvaney/regista.svg?branch=master)](https://travis-ci.org/Torvaney/regista)
+[![AppVeyor Build
+Status](https://ci.appveyor.com/api/projects/status/github/Torvaney/regista?branch=master&svg=true)](https://ci.appveyor.com/project/Torvaney/regista)
+[![Coverage
+status](https://codecov.io/gh/Torvaney/regista/branch/master/graph/badge.svg)](https://codecov.io/github/Torvaney/regista?branch=master)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
-regista is a package for performing some of the common modelling tasks in soccer analytics. Currently a *work in progress*.
+## Overview
 
-Installation
-------------
+regista is a package for performing some of the common modelling tasks
+in soccer analytics.
 
-regista is not currently available on CRAN but can be downloaded from github like so:
+## Installation
+
+regista is not currently available on CRAN but can be downloaded from
+github like so:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("torvaney/regista")
 ```
 
-Examples
---------
+## Examples
 
 ### Dixon-Coles
 
-The ["Dixon-Coles model"](http://web.math.ku.dk/~rolf/teaching/thesis/DixonColes.pdf) is a modified poisson model, specifically designed for estimating teams' strengths and for predicting football matches.
+The [“Dixon-Coles
+model”](http://web.math.ku.dk/~rolf/teaching/thesis/DixonColes.pdf) is
+a modified poisson model, specifically designed for estimating teams’
+strengths and for predicting football matches.
 
 Regista provides an implementation of this model:
 
@@ -46,7 +55,9 @@ print(fit)
     ## Away goals: agoal ~ off(away) + def(home) + 0
     ## Weights   : 1
 
-The Dixon-Coles model provides estimates of each team's offensive and defensive strength, along with an estimate of home-field advantage (`hfa`):
+The Dixon-Coles model provides estimates of each team’s offensive and
+defensive strength, along with an estimate of home-field advantage
+(`hfa`):
 
 ``` r
 parameters <- tibble::tibble(
@@ -72,7 +83,9 @@ parameters
     ## 10 off___Liverpool         0.162  
     ## # ... with 32 more rows
 
-Regista also comes with a `predict` method to predict method, to either predict the goalscoring rate of either team, or the probabilities of different possible scorelines:
+Regista also comes with a `predict` method to predict method, to either
+predict the goalscoring rate of either team, or the probabilities of
+different possible scorelines:
 
 ``` r
 with_predictions <- cbind(
@@ -98,10 +111,15 @@ tibble::as_tibble(with_predictions[, c("date", "home", "away", "home_rate", "awa
     ## 10 2011-01-05 Arsenal Manchester City       1.36     1.07 
     ## # ... with 370 more rows
 
-A more flexible api is provided with `dixoncoles_ext`, which allows the base Dixon-Coles model to be extended arbitrarily.
+A more flexible api is provided with `dixoncoles_ext`, which allows the
+base Dixon-Coles model to be extended arbitrarily.
 
-There are some more extensive examples and analyses using regista available at the following links:
+There are some more extensive examples and analyses using regista
+available at the following links:
 
--   [Modelling the World Cup with regista](http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/)
--   [Dixon Coles and xG: together at last](http://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/)
--   [What a diff'rence xG makes](http://www.statsandsnakeoil.com/2018/07/15/what-a-diff-rence-xg-makes/)
+  - [Modelling the World Cup with
+    regista](http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/)
+  - [Dixon Coles and xG: together at
+    last](http://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/)
+  - [What a diff’rence xG
+    makes](http://www.statsandsnakeoil.com/2018/07/15/what-a-diff-rence-xg-makes/)
