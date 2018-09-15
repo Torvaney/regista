@@ -287,10 +287,10 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", 
   mat2 <- reduce(column_names, .fill_if_missing, .init = mat2)
 
   # Ensure both matrices have the same column ordering
-  # We have to use matrix to ensure that it retains it's dimensions when
+  # We have to use drop = FALSE to ensure that it retains it's dimensions when
   # there's just 1 observation (for instance when calling predict.dixoncoles)
-  mat1 <- matrix(mat1[, column_names], nrow = nrow(mat1))
-  mat2 <- matrix(mat2[, column_names], nrow = nrow(mat2))
+  mat1 <- mat1[, column_names, drop = FALSE]
+  mat2 <- mat2[, column_names, drop = FALSE]
 
   modeldata <- list(
     vars    = column_names,
