@@ -21,5 +21,6 @@ Imports:
 Suggests: 
   testthat,
   covr,
-  modelr
+  modelr,
+  broom
 RoxygenNote: 6.1.0

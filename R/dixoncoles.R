@@ -217,6 +217,36 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", 
   rates
 }
 
+# Tidyr methods ----------------------------------------------------------------
+
+#' Tidy a Dixon-Coles model
+#'
+#' @description
+#' Tidy summarises information about a fitted Dixon-Coles model.
+#'
+#' @param x A `dixoncoles` object created by `regista::dixoncoles()`
+#' @param ... Additional arguments. Not used.
+#'
+#' @return A `tibble::tibble()` with one row for each parameter estimated by the
+#' model.
+#'
+#' @importFrom purrr %>% %||% map_chr pluck
+#' @export
+tidy.dixoncoles <- function(x) {
+  parameter_names <- strsplit(names(x$par), "___")
+  parameter_values <- x$par
+
+  pluck_na <- function(y, ...) {
+    pluck(y, ...) %||% NA_character_
+  }
+
+  tibble::tibble(parameter = map_chr(parameter_names, pluck, 1),
+                 team      = map_chr(parameter_names, pluck_na, 2),
+                 value     = parameter_values)
+}
+
+# Internal functions -----------------------------------------------------------
+
 #' Calculate the probability of scorelines occuring for a given set of matches
 #' @keywords internal
 #' @importFrom purrr map2
