@@ -1,4 +1,8 @@
-# regista 0.3.1.9000 (In progress)
+# regista 0.3.2.9000 (In progress)
+
+ * S3 method for `broom::tidy`
+
+# regista 0.3.1
 
  * Allow dixoncoles predictions on data without home/away goal columns
 
