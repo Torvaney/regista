@@ -139,6 +139,7 @@ dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
   res$weights <- weights
 
   res$implicit_hfa <- FALSE
+  res$data <- data
 
   structure(res, class = "dixoncoles")
 }
@@ -180,10 +181,15 @@ print.dixoncoles <- function(x, ...) {
 #' of scorelines and their estimated probabilities.
 #'
 #' @export
-predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", "outcomes"),
+predict.dixoncoles <- function(object, newdata = NULL,
+                               type = c("rates", "scorelines", "outcomes"),
                                up_to = 50, threshold = sqrt(.Machine$double.eps),
                                ...) {
   type <- match.arg(type, c("rates", "scorelines", "outcomes"))
+
+  if (is.null(newdata)) {
+    newdata <- object$data
+  }
 
   if (object$implicit_hfa == TRUE) {
     newdata$hfa <- TRUE
@@ -212,8 +218,11 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", 
   }
 
   # Return rates if type == "rates" (default)
-  rates <- tibble::tibble(home_rate = c(rate_info$home),
-                          away_rate = c(rate_info$away))
+  rates <- purrr::map2(rate_info$home, rate_info$away, function(h, a) {
+    tibble::tibble(side = c("home", "away"),
+                   rate = c(h, a))
+  })
+
   rates
 }
 
@@ -232,7 +241,7 @@ predict.dixoncoles <- function(object, newdata, type = c("rates", "scorelines", 
 #'
 #' @importFrom purrr %>% %||% map_chr pluck
 #' @export
-tidy.dixoncoles <- function(x) {
+tidy.dixoncoles <- function(x, ...) {
   parameter_names <- strsplit(names(x$par), "___")
   parameter_values <- x$par
 
@@ -243,6 +252,44 @@ tidy.dixoncoles <- function(x) {
   tibble::tibble(parameter = map_chr(parameter_names, pluck, 1),
                  team      = map_chr(parameter_names, pluck_na, 2),
                  value     = parameter_values)
+}
+
+#' Augment data with information from a Dixon-Coles model
+#'
+#' @description
+#' Append additional information about a set of matches.
+#'
+#' @param x A `dixoncoles` object created by `regista::dixoncoles`.
+#' @param data A `data.frame` or `tibble::tibble` containing the original data.
+#' @param newdata A `data.frame` or `tibble::tibble` object of new data to be predicted.
+#' @param type.predict Type of prediction. Passed onto `regista::predict.dixoncoles`
+#' @param ... Additional arguments. Not used.
+#'
+#' @return A `tibble::tibble()` with one row.
+#'
+#' @importFrom purrr %||%
+#'
+#' @export
+augment.dixoncoles <- function(x, data = NULL, newdata, type.predict, ...) {
+  if (missing(newdata)) {
+    newdata <- data %||% x$data
+  }
+
+  augmented_data <- tibble::as_tibble(newdata)
+
+  if (type.predict == "scorelines") {
+    augmented_data$.scorelines <- predict.dixoncoles(x, newdata, type = type.predict)
+    return(augmented_data)
+  }
+
+  if (type.predict == "outcomes") {
+    augmented_data$.outcomes <- predict.dixoncoles(x, newdata, type = type.predict)
+    return(augmented_data)
+  }
+
+  # Use rates by default
+  augmented_data$.rates <- predict.dixoncoles(x, newdata, type = type.predict)
+  augmented_data
 }
 
 # Internal functions -----------------------------------------------------------

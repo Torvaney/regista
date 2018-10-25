@@ -2,6 +2,7 @@
 
 S3method(predict,dixoncoles)
 S3method(print,dixoncoles)
+export(augment.dixoncoles)
 export(def)
 export(discount_exponential)
 export(discount_lte)

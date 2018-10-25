@@ -4,7 +4,7 @@
 \alias{predict.dixoncoles}
 \title{Predict method for Dixon-Coles model fits}
 \usage{
-\method{predict}{dixoncoles}(object, newdata, type = c("rates",
+\method{predict}{dixoncoles}(object, newdata = NULL, type = c("rates",
   "scorelines", "outcomes"), up_to = 50,
   threshold = sqrt(.Machine$double.eps), ...)
 }

@@ -4,7 +4,7 @@
 \alias{tidy.dixoncoles}
 \title{Tidy a Dixon-Coles model}
 \usage{
-tidy.dixoncoles(x)
+tidy.dixoncoles(x, ...)
 }
 \arguments{
 \item{x}{A `dixoncoles` object created by `regista::dixoncoles()`}
