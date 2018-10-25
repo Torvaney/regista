@@ -56,16 +56,43 @@ parameters <- tibble::tibble(
 parameters
 ```
 
-Regista also comes with a `predict` method to predict method, to either predict the goalscoring rate of either team, or the probabilities of different possible scorelines:
+Regista also comes with a `predict` method, to predict the goalscoring 
+rate of either team, or the probabilities of different possible scorelines or 
+match outcomes:
 
 ```{r}
-with_predictions <- cbind(
-  premier_league_2010,
-  predict(fit, premier_league_2010, type = "rates")
-)
+# Create a copy of the original data and attach predictions
+to_predict <- premier_league_2010
+to_predict$predictions <- predict(fit, newdata = premier_league_2010)
 
-tibble::as_tibble(with_predictions[, c("date", "home", "away", "home_rate", "away_rate")])
+to_predict
 ```
+
+The regista package is designed to work fluidly with the tidyverse and tidy principles.
+For instance, predictions can be handled easily with the [broom package](https://www.tidyverse.org/articles/2018/07/broom-0-5-0/).
+
+For instance, to get predictions of Home/Draw/Away probabilities as columns in a
+dataframe:
+
+```{r}
+library(tidyverse)
+library(broom)
+
+fit %>% 
+  augment(newdata = premier_league_2010, type = "outcomes") %>% 
+  unnest() %>%
+  mutate(prob = scales::percent(prob, 2)) %>%  # Prettify output
+  spread(outcome, prob) %>% 
+  select(home, away, home_win, draw, away_win, result)
+```
+
+Or to get model parameters in a table format:
+
+```{r}
+tidy(fit)
+```
+
+(Note that team parameter estimates are in log space).
 
 A more flexible api is provided with `dixoncoles_ext`, which allows the base Dixon-Coles model to be extended arbitrarily.
 
@@ -74,3 +101,11 @@ There are some more extensive examples and analyses using regista available at t
  * [Modelling the World Cup with regista](http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/)
  * [Dixon Coles and xG: together at last](http://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/)
  * [What a diff'rence xG makes](http://www.statsandsnakeoil.com/2018/07/15/what-a-diff-rence-xg-makes/)
+
+
+Other options
+---
+
+* The [goalmodel](https://github.com/opisthokonta/goalmodel) R package contains an
+implementation of the Dixon-Coles model, along with some additional method for
+modelling the number of goals scored in sports games.
