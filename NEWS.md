@@ -1,4 +1,4 @@
-# regista 0.3.2.9000 (In progress)
+# regista 0.4.0.9000 (In progress)
 
 * S3 method for `broom::tidy` and `broom::augment`
 * Standardise `predict.dixoncoles` to always return a list of `tibble::tibbles`

@@ -354,8 +354,8 @@ tidy principles. For instance, predictions can be handled easily with
 the [broom
 package](https://www.tidyverse.org/articles/2018/07/broom-0-5-0/).
 
-For instance, to get predictions of Home/Draw/Away probabilities as
-columns in a dataframe:
+To get predictions of Home/Draw/Away probabilities as columns in a
+dataframe, you can use the `broom::augment` function:
 
 ``` r
 library(tidyverse)
