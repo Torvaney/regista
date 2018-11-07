@@ -1,6 +1,11 @@
-# regista 0.4.0.9000 (In progress)
+# regista 0.4.1.9000 (In progress)
 
-* S3 method for `broom::tidy` and `broom::augment`
+* Suppress warnings in `dixoncoles` caused by insuffiecent bounds on parameter 
+estimates (see #1 and #23)
+
+# regista 0.4.0
+
+* S3 methods for `broom::tidy` and `broom::augment`
 * Standardise `predict.dixoncoles` to always return a list of `tibble::tibbles`
 no matter the `type`.
 

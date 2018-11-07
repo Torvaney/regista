@@ -407,7 +407,7 @@ augment.dixoncoles <- function(x, data = NULL, newdata, type.predict, ...) {
   hprob <- dpois(hg, home_rates, log = TRUE)
   aprob <- dpois(ag, away_rates, log = TRUE)
 
-  loglike <- hprob + aprob + log(.tau(hg, ag, home_rates, away_rates, rho))
+  loglike <- hprob + aprob + log_quietly(.tau(hg, ag, home_rates, away_rates, rho))
 
   # Create weighted pseudo-log likelihood
   ploglike <- loglike * weights
