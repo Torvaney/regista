@@ -226,7 +226,7 @@ predict.dixoncoles <- function(object, newdata = NULL,
   rates
 }
 
-# Tidyr methods ----------------------------------------------------------------
+# Broom methods ----------------------------------------------------------------
 
 #' Tidy a Dixon-Coles model
 #'
