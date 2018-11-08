@@ -1,48 +1,20 @@
 context("Utils")
 
-test_that("Generating offense and defence dummies works", {
-  teams <- factor(c("Arsenal", "Liverpool"))
 
-  off_teams <- factor(c("off___Arsenal", "off___Liverpool"))
-  def_teams <- factor(c("def___Arsenal", "def___Liverpool"))
-
-  expect_equal(off(teams), off_teams)
-  expect_equal(def(teams), def_teams)
+test_that("Log warnings are be suppressed", {
+  expect_warning(regista:::log_quietly(-1),  NA)
+  expect_warning(regista:::log_quietly(-10), NA)
 })
 
 
-test_that("Scorelines are aggregated accurately", {
-  create_scorelines <- function(p00, p10, p01, p11) {
-    tibble::tribble(
-      ~hgoal, ~agoal, ~prob,
-           0,      0,   p00,
-           1,      0,   p10,
-           0,      1,   p01,
-           1,      1,   p11,
-           2,      1,   1 - sum(p00, p10, p01, p11)
-    )
+test_that("Valid log(x) values are returned", {
+  expect_equal_log <- function(x) {
+    expect_equal(regista:::log_quietly(x), log(x))
   }
 
-  expect_equal_scorelines <- function(p00, p10, p01, p11) {
-    scorelines <- create_scorelines(p00, p10, p01, p11)
-
-    p21 <- 1 - sum(p00, p10, p01, p11)
-    hw <- p10 + p21
-    d <- p00 + p11
-    aw <- p01
-
-    outcomes <- tibble::tribble(
-      ~outcome, ~prob,
-    "home_win",    hw,
-        "draw",     d,
-    "away_win",    aw
-    )
-
-    expect_equal(outcomes, scorelines_to_outcomes(scorelines))
-  }
-
-  expect_equal_scorelines(0.25, 0.25, 0.25, 0.15)
-  expect_equal_scorelines(1.00, 0.00, 0.00, 0.00)
-  expect_equal_scorelines(0.00, 1.00, 0.00, 0.00)
-  expect_equal_scorelines(0.00, 0.00, 1.00, 0.00)
+  expect_equal_log(1)
+  expect_equal_log(2)
+  expect_equal_log(pi)
+  expect_equal_log(exp(1))
+  expect_equal_log(143)
 })
