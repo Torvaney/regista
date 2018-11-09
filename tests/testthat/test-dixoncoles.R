@@ -1,5 +1,6 @@
 context("Dixon-Coles")
 
+
 test_that("Tau(rho=0) is always 1", {
   expect_tau_0 <- function(hg, ag, hr, ar) {
     expect_equal(regista:::.tau(hg, ag, hr, ar, 0), 1)
@@ -12,6 +13,7 @@ test_that("Tau(rho=0) is always 1", {
   expect_tau_0(5, 3, 1.0, 1.0)
 })
 
+
 test_that("Dependence calculation (tau) is correct", {
   expect_equal(regista:::.tau(0, 0, 1.2, 1.2, -0.2), 1.288)
   expect_equal(regista:::.tau(0, 0, 1.2, 1.2,  0.2), 0.712)
@@ -22,6 +24,7 @@ test_that("Dependence calculation (tau) is correct", {
   expect_equal(regista:::.tau(1, 1, 0.8, 0.8, -0.2), 1.2)
   expect_equal(regista:::.tau(1, 1, 0.8, 0.8,  0.2), 0.8)
 })
+
 
 test_that("Negative log likelihood follows poisson likelihood", {
   expect_nll_pois <- function(hg, ag, hr, ar) {
@@ -35,6 +38,7 @@ test_that("Negative log likelihood follows poisson likelihood", {
   expect_nll_pois(2, 2, 0.7, 1.8)
   expect_nll_pois(0, 1, 1.4, 1.1)
 })
+
 
 test_that("Negative log likelihood is using dependence parameter", {
   expect_nll_dep <- function(hg, ag, hr, ar, rho) {
@@ -54,6 +58,7 @@ test_that("Negative log likelihood is using dependence parameter", {
   expect_nll_dep(0, 1, 1.4, 1.1, -0.21)
 })
 
+
 test_that("Constructing dummy variables from factors works", {
   expect_equal_mat <- function(m1, m2) {
     expect_equal(colnames(m1), colnames(m2))
@@ -70,6 +75,7 @@ test_that("Constructing dummy variables from factors works", {
 
   expect_equal_mat(regista:::.make_dummies(fct), mat)
 })
+
 
 test_that("Missing columns are filled in", {
   mat <- matrix(
@@ -96,6 +102,7 @@ test_that("Missing columns are filled in", {
   expect_cols(mat, "longname", c("a", "b", "longname"))
 })
 
+
 test_that("Rates are calculated correctly", {
   rho <- -0.14
   params <- c(off___teamA =  0.0, off___teamB = 0.0,
@@ -114,6 +121,7 @@ test_that("Rates are calculated correctly", {
 })
 
 # Handled by an error/warning for now
+
 # test_that("Simple Dixon-Coles can handle character teams", {
 #   suppressWarnings({
 #     fit_fct <- dixoncoles(hgoal, agoal, home, away, premier_league_2010)
@@ -126,7 +134,8 @@ test_that("Rates are calculated correctly", {
 #   expect_equal(fit_chr$par, fit_fct$par)
 # })
 
-test_that("Both Dixon-Coles function return the same estimates", {
+
+test_that("Both Dixon-Coles functions return the same estimates", {
   seed <- 2018-06-03
 
   set.seed(seed)
@@ -145,6 +154,7 @@ test_that("Both Dixon-Coles function return the same estimates", {
   expect_equal(pars_simple, pars_ext)
 })
 
+
 test_that("Home advantage estimates are reasonable", {
   skip_if_not_installed("modelr")
   set.seed(2018)
@@ -160,6 +170,7 @@ test_that("Home advantage estimates are reasonable", {
     expect_lt(hfa, 0.5)
   })
 })
+
 
 test_that("Weighting games works", {
   # Give games where the home team wins a higher weight and compare HFA
@@ -206,6 +217,7 @@ test_that("Weighting games works", {
 
   expect_gt(high_hfa$par[["hfa"]], equal_weight$par[["hfa"]])
 })
+
 
 test_that("Games can be predicted", {
 
