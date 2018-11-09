@@ -248,4 +248,10 @@ test_that("Games can be predicted", {
   rates_simple <- predict(fit_simple, first_game, type = "rates")
   rates_ext <- predict(fit_ext, first_game, type = "rates")
   expect_equal(rates_simple, rates_ext)
+
+
+  # Inconsistent factor levels will raise an error
+  newdata <- subset(premier_league_2010, (home != "Arsenal") & (away != "Arsenal"))
+  expect_error(predict(fit_simple, newdata = factor_teams(newdata, c("home", "away"))),
+               "New data must have the same factor levels as the data used to fit")
 })
