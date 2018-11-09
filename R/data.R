@@ -1,6 +1,6 @@
 #' Results for the 2010/11 English Premier League season
 #'
-#' A dataset containing the home and away goals for each game in the 2010/11
+#' A tibble containing the home and away goals for each game in the 2010/11
 #' English Premier League season.
 #'
 #' @format A data frame with 380 rows and 6 variables:
