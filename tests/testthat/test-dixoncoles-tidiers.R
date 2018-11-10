@@ -1,5 +1,6 @@
 context("Dixon-Coles tidiers")
 
+
 test_that("Models can be tidied", {
   suppressWarnings({
     fit_simple <- dixoncoles(hgoal, agoal, home, away, premier_league_2010)
