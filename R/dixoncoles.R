@@ -107,7 +107,6 @@ dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
 
   # Handle args to pass onto optim including defaults
   dots <- list(...)
-
   if (!("method" %in% names(dots))) {
     dots["method"] <- "BFGS"
   }
@@ -203,6 +202,11 @@ predict.dixoncoles <- function(object, newdata = NULL,
     data    = newdata,
     predict = TRUE
   )
+
+  if (!identical(c(modeldata$vars, "rho"), names(object$par))) {
+    stop(glue::glue("New data must have the same factor levels as the data used to fit.
+                     See ?factor_teams"))
+  }
 
   # Matrix multiplication to get Poisson means
   rate_info <- .dc_rate_info(object$par, modeldata)
