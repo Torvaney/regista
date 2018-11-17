@@ -1,4 +1,4 @@
-context("Utils")
+context("Package utils")
 
 
 test_that("Log warnings are be suppressed", {

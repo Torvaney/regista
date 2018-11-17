@@ -120,19 +120,34 @@ test_that("Rates are calculated correctly", {
   expect_equivalent(rates$away, exp(params["off___teamB"] + params["def___teamA"]))
 })
 
-# Handled by an error/warning for now
 
-# test_that("Simple Dixon-Coles can handle character teams", {
-#   suppressWarnings({
-#     fit_fct <- dixoncoles(hgoal, agoal, home, away, premier_league_2010)
-#
-#     premier_league_2010$home <- as.character(premier_league_2010$home)
-#     premier_league_2010$away <- as.character(premier_league_2010$away)
-#     fit_chr <- dixoncoles(~hgoal, ~agoal, ~home, ~away, premier_league_2010)
-#   })
-#
-#   expect_equal(fit_chr$par, fit_fct$par)
-# })
+test_that("Normalising offence parameters works", {
+  expect_params_normalised <- function(off_a, off_b, def_a, def_b, rho) {
+    params <- c(off___teamA = off_a, off___teamB = off_b,
+                def___teamA = def_a, def___teamB = def_b,
+                rho = rho)
+
+    params_normalised <- regista:::.normalise_off_params(params)
+
+    # Expect defence parameters unchanged
+    expect_equivalent(params_normalised["def___teamA"], params["def___teamA"])
+    expect_equivalent(params_normalised["def___teamB"], params["def___teamB"])
+    expect_equivalent(params_normalised["rho"], params["rho"])
+
+    # Expect mean(offence params) = 1
+    exp_params <- exp(params_normalised)
+    off_params <- exp_params[startsWith(names(exp_params), "off___")]
+    expect_equal(mean(off_params), 1)
+  }
+
+  expect_params_normalised(1.0,  1.0, -0.1, 0.1, -0.10)
+  expect_params_normalised(0.0,  0.0, -0.1, 0.1, -0.05)
+  expect_params_normalised(-0.2, 0.2, -0.3, 0.3, -0.10)
+  expect_params_normalised(0.1, -0.1,  0.0, 0.0,  0.10)
+  expect_params_normalised(0.1, -0.1, -1.0, 1.0,  0.00)
+})
+
+# ------------------------------------------------------------------------------
 
 
 test_that("Both Dixon-Coles functions return the same estimates", {
@@ -152,6 +167,10 @@ test_that("Both Dixon-Coles functions return the same estimates", {
   pars_ext <- sort(fit_ext$par)
 
   expect_equal(pars_simple, pars_ext)
+
+  # While we're here, check that parameters are normalised
+  expect_equal(mean(exp(pars_simple[startsWith(names(pars_simple), "off___")])), 1)
+  expect_equal(mean(exp(pars_ext[startsWith(names(pars_ext), "off___")])), 1)
 })
 
 

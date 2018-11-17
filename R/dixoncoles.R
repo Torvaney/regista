@@ -133,6 +133,8 @@ dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
 
   res <- do.call(optim, args)
 
+  res$par <- .normalise_off_params(res$par)
+
   res$f1 <- f1
   res$f2 <- f2
   res$weights <- weights
@@ -436,7 +438,7 @@ augment.dixoncoles <- function(x, data = NULL, newdata, type.predict, ...) {
 #' Dixon-Coles objective function
 #' @keywords internal
 .dc_objective_function <- function(params, modeldata) {
-  rates <- .dc_rate_info(params, modeldata)
+  rates <- .dc_rate_info(.normalise_off_params(params), modeldata)
 
   .dc_negloglike(
     modeldata$y1,
@@ -446,6 +448,17 @@ augment.dixoncoles <- function(x, data = NULL, newdata, type.predict, ...) {
     rates$rho,
     modeldata$weights
   )
+}
+
+#' Normalise attack parameters to make the model identifable (mean = 1)
+#' @keywords internal
+.normalise_off_params <- function(params) {
+  off_ixs <- startsWith(names(params), "off___")
+  off_params <- params[off_ixs]
+
+  params[off_ixs] <- params[off_ixs] - log(mean(exp(off_params)))
+
+  params
 }
 
 #' Quote terms of a formula
