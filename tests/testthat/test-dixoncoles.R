@@ -1,6 +1,9 @@
 context("Dixon-Coles")
 
 
+# Test the internals -----------------------------------------------------------
+
+
 test_that("Tau(rho=0) is always 1", {
   expect_tau_0 <- function(hg, ag, hr, ar) {
     expect_equal(regista:::.tau(hg, ag, hr, ar, 0), 1)
@@ -147,7 +150,8 @@ test_that("Normalising offence parameters works", {
   expect_params_normalised(0.1, -0.1, -1.0, 1.0,  0.00)
 })
 
-# ------------------------------------------------------------------------------
+
+# Extrinsic tests  -------------------------------------------------------------
 
 
 test_that("Both Dixon-Coles functions return the same estimates", {
