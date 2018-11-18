@@ -74,7 +74,7 @@ For instance, predictions can be handled easily with the [broom package](https:/
 To get predictions of Home/Draw/Away probabilities as columns in a
 dataframe, you can use the `broom::augment` function:
 
-```{r}
+```{r, message = FALSE}
 library(tidyverse)
 library(broom)
 
