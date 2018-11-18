@@ -1,7 +1,8 @@
 # regista 0.4.1.9000 (In progress)
 
-* Suppress warnings in `dixoncoles` caused by insuffiecent bounds on parameter 
+* Suppress warnings in `dixoncoles` caused by insufficent bounds on parameter 
 estimates (see #1 and #23)
+* Normalise attack parameters during fitting (see #1)
 
 # regista 0.4.0
 
