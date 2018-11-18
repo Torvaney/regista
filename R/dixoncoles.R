@@ -177,9 +177,14 @@ print.dixoncoles <- function(x, ...) {
 #'   below `threshold` will not be returned.
 #' @param ... Arguments passed from other methods
 #'
-#' @return If `type = "rates"`, a dataframe of each teams' estimated goalscoring
-#' rate. If `type = "scorelines"`, a list in which each element is a dataframe
-#' of scorelines and their estimated probabilities.
+#' @return A list in which each element is a tibble. The contents of the tibble
+#' depends on the value supplied to the `type` argument. These values are
+#' enumerated for each possible value of `type` below:
+#' \describe{
+#'   \item{`rates`}{the side ("home" and "away") and the goalscoring rate of both teams}
+#'   \item{`scorelines`}{the probability (`prob`) for each scoreline (`hgoal` and `agoal`)}
+#'   \item{`outcomes`}{the probability (`prob`) of each outcome ("home_win", "draw" or "away_win") occurring}
+#' }
 #'
 #' @export
 predict.dixoncoles <- function(object, newdata = NULL,
