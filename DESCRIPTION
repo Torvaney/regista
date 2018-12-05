@@ -5,7 +5,7 @@ Version: 0.4.1.9000
 Authors@R: person("Ben", "Torvaney", email = "torvaney@protonmail.com", role = c("aut", "cre"))
 Description: A collection of models and tools for soccer analytics.
 URL: https://github.com/Torvaney/regista
-BugReports: https://github.com/Torvaney/regista/issues
+BugReports: http://regista.statsandsnakeoil.com, https://github.com/Torvaney/regista/issues
 License: file LICENSE
 Encoding: UTF-8
 LazyData: true

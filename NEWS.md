@@ -7,7 +7,7 @@ estimates (see #1 and #23)
 # regista 0.4.0
 
 * S3 methods for `broom::tidy` and `broom::augment`
-* Standardise `predict.dixoncoles` to always return a list of `tibble::tibbles`
+* Standardise `predict.dixoncoles` to always return a list of `tibble::tibble`s
 no matter the `type`.
 
 # regista 0.3.1
