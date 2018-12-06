@@ -3,7 +3,7 @@ README
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# regista
+# regista <img src="man/figures/logo.png" align="right" />
 
 [![Build
 Status](https://travis-ci.org/Torvaney/regista.svg?branch=master)](https://travis-ci.org/Torvaney/regista)
