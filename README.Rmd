@@ -51,59 +51,11 @@ fit <- dixoncoles(hgoal, agoal, home, away, data = premier_league_2010)
 print(fit)
 ```
 
-The Dixon-Coles model provides estimates of each team's offensive and defensive strength, along with
-an estimate of home-field advantage (`hfa`):
-
-```{r}
-parameters <- tibble::tibble(
-  parameter = names(fit$par),
-  value     = fit$par
-)
-
-parameters
-```
-
-Regista also comes with a `predict` method, to predict the goalscoring 
-rate of either team, or the probabilities of different possible scorelines or 
-match outcomes:
-
-```{r}
-# Create a copy of the original data and attach predictions
-to_predict <- premier_league_2010
-to_predict$predictions <- predict(fit, newdata = premier_league_2010)
-
-to_predict
-```
-
-The regista package is designed to work fluidly with the tidyverse and tidy principles.
-For instance, predictions can be handled easily with the [broom package](https://www.tidyverse.org/articles/2018/07/broom-0-5-0/).
-
-To get predictions of Home/Draw/Away probabilities as columns in a
-dataframe, you can use the `broom::augment` function:
-
-```{r, message = FALSE}
-library(tidyverse)
-library(broom)
-
-fit %>% 
-  augment(newdata = premier_league_2010, type = "outcomes") %>% 
-  unnest() %>%
-  mutate(prob = scales::percent(prob, 2)) %>%  # Prettify output
-  spread(outcome, prob) %>% 
-  select(home, away, home_win, draw, away_win, result)
-```
-
-Or to get model parameters in a table format:
-
-```{r}
-tidy(fit)
-```
-
-(Note that team parameter estimates are in log space).
-
 A more flexible api is provided with `dixoncoles_ext`, which allows the base Dixon-Coles model to be extended arbitrarily.
 
-There are some more extensive examples and analyses using regista available at the following links:
+`vignette("using-dixon-coles")` gives some simple examples for using the model. 
+Additionally, there are more extensive examples and analyses using regista 
+available at the following links:
 
  * [Modelling the World Cup with regista](http://www.statsandsnakeoil.com/2018/06/05/modelling-the-world-cup-with-regista/)
  * [Dixon Coles and xG: together at last](http://www.statsandsnakeoil.com/2018/06/22/dixon-coles-and-xg-together-at-last/)
