@@ -102,7 +102,7 @@ dixoncoles <- function(hgoal, agoal, hteam, ateam, data, weights = 1, ...) {
 #'                       agoal ~ off(away) + def(home) + 0,
 #'                       weights = 1,  # All games weighted equally
 #'                       data = premier_league_2010)
-dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
+dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, objective_fn = .dc_objective_function, ...) {
   weights <- enquo(weights)
 
   # Handle args to pass onto optim including defaults
@@ -126,7 +126,7 @@ dixoncoles_ext <- function(f1, f2, weights, data, init = NULL, ...) {
   # Maybe there's a better way using rlang::list2?
   args <- c(
     list(par       = params,
-         fn        = .dc_objective_function,
+         fn        = objective_fn,
          modeldata = modeldata),
     dots
   )
