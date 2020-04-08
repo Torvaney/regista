@@ -43,7 +43,7 @@ The ["Dixon-Coles model"](http://web.math.ku.dk/~rolf/teaching/thesis/DixonColes
 
 Regista provides an implementation of this model:
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(regista)
 
 fit <- dixoncoles(hgoal, agoal, home, away, data = premier_league_2010)
