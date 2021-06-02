@@ -68,6 +68,8 @@ using regista available at the following links:
 
 ## Other options
 
+  - The [mezzala](https://github.com/Torvaney/mezzala) package provides
+    similar functionality for Python.
   - The [goalmodel](https://github.com/opisthokonta/goalmodel) R package
     contains an implementation of the Dixon-Coles model, along with some
     additional method for modelling the number of goals scored in sports
