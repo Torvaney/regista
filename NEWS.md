@@ -1,4 +1,8 @@
-# regista 0.4.1.9000 (In progress)
+# regista 0.4.2
+
+* Correct S3 method export for `broom::tidy` and `broom::augment`
+
+# regista 0.4.1
 
 * Suppress warnings in `dixoncoles` caused by insufficent bounds on parameter 
 estimates (see #1 and #23)

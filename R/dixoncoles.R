@@ -251,7 +251,7 @@ predict.dixoncoles <- function(object, newdata = NULL,
 #' model.
 #'
 #' @importFrom purrr %>% %||% map_chr pluck
-#' @export
+#' @exportS3Method broom::tidy
 tidy.dixoncoles <- function(x, ...) {
   parameter_names <- strsplit(names(x$par), "___")
   parameter_values <- x$par
@@ -280,7 +280,7 @@ tidy.dixoncoles <- function(x, ...) {
 #'
 #' @importFrom purrr %||%
 #'
-#' @export
+#' @exportS3Method broom::augment
 augment.dixoncoles <- function(x, data = NULL, newdata, type.predict, ...) {
   if (missing(newdata)) {
     newdata <- data %||% x$data

@@ -4,7 +4,8 @@
 \name{premier_league_2010}
 \alias{premier_league_2010}
 \title{Results for the 2010/11 English Premier League season}
-\format{A data frame with 380 rows and 6 variables:
+\format{
+A data frame with 380 rows and 6 variables:
 \describe{
   \item{date}{date that the game was played}
   \item{home}{The home team}
@@ -14,7 +15,8 @@
   \item{result}{The match result (H/D/A)}
   \item{hfa}{Home field advantage (whether the `home` team played at their
              home stadium)}
-}}
+}
+}
 \usage{
 premier_league_2010
 }

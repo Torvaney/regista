@@ -4,8 +4,7 @@
 \alias{scorelines_to_outcomes}
 \title{Aggregate scoreline probabilities to 1X2 probabilities}
 \usage{
-scorelines_to_outcomes(scorelines, hgoal = hgoal, agoal = agoal,
-  prob = prob)
+scorelines_to_outcomes(scorelines, hgoal = hgoal, agoal = agoal, prob = prob)
 }
 \arguments{
 \item{scorelines}{A dataframe containing the scoreline probabilities}
